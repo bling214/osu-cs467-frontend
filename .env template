@@ -1,0 +1,3 @@
+# .env file for Vite React app
+VITE_SUPABASE_URL="https://your-id.supabase.co"
+VITE_SUPABASE_ANON_KEY="your-public-anon-key"
