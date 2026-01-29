@@ -23,11 +23,13 @@ function App() {
     }
   };
   return (
+    // Reference for grid format:
     //https://dev.to/musselmanth/the-dynamic-css-grid-configuration-ive-been-looking-for-1ogd
     <div className="grid grid-cols-[repeat(auto-fit,_minmax(300px,_1fr))]">
        {projs.map((proj)=> (
         <Card 
         key={proj.id}
+        imageLink = {proj.img_url}
         projTitle={proj.title} 
         complexity="TBD"
         effort="TBD"
