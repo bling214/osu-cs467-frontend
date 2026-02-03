@@ -9,18 +9,19 @@ const Card = (props) => {
     return (
         <div className="bg-gray-200 m-3 border-2 border-gray-700 p-4">
             <img src={imageLink} />
-            <div className="space"></div>
+            <br />
             <h2>
                 <strong>{projTitle}</strong>
             </h2>
-            
-            <div className="space"></div>
+            <br />
             <p>Complexity: {complexity}/5 Stars</p>
+            <br />
             <p>Effort: {effort} Hours/Week</p>
-            <p>Tech Tags: TBD</p>
-            <div className="space"></div>
+            <br />
+            <p>Tech Tags: {techTags}</p>
+            <br />
             <a href={projLink} className="text-blue-500 underline">View Project on OSU Project Portal</a>
-            <div className="space"></div>
+            <br />
             <a href={ratingsLink} className="text-blue-500 underline">View {numRatings} Student Ratings</a>
         </div>
     );

@@ -7,8 +7,10 @@ import Card from './Card.jsx';
 import { useEffect, useState } from "react";
 import supabase from "./supabase-client";
 import React from "react";
+import Home from './Index.jsx';
+import Form from './Form.jsx';
 
-function App() {
+function Index() {
   const [projs, setProjs] = useState([]);
 
   useEffect(() => {
@@ -24,7 +26,7 @@ function App() {
     }
   };
   return (
-
+    
     // Reference for grid format:
     //https://dev.to/musselmanth/the-dynamic-css-grid-configuration-ive-been-looking-for-1ogd
     <div className="grid grid-cols-[repeat(auto-fit,_minmax(300px,_1fr))]">
@@ -35,7 +37,7 @@ function App() {
         projTitle={proj.title} 
         complexity="TBD"
         effort="TBD"
-        techTags={proj.tech_tags.join(', ')}
+        techTags={proj.tech_tags}
         projLink={proj.portal_url}
         numRatings="TBD"
         ratingsLink="#"></Card>
@@ -44,4 +46,4 @@ function App() {
   );
 }
 
-export default App;
+export default Index;

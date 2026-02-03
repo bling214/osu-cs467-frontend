@@ -9,7 +9,9 @@ h1 {
 }
 
 h2 {
-  font-size: 28px;
+    text-align: center;
+    font-weight: bold;
+    font-size: 40px;
 }
 
 p {
@@ -23,5 +25,4 @@ a {
 .space {
   margin-bottom: 1em;
 }
-
 
