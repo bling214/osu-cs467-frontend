@@ -5,7 +5,7 @@
 import "./App.css"
 
 const Card = (props) => {
-    const {projTitle, complexity, effort, techTags,projLink, numRatings,ratingsLink, imageLink} = props;
+    const {projTitle, complexity, cooperation, effort, techTags, projLink, numRatings,ratingsLink, imageLink} = props;
     return (
         <div className="bg-gray-200 m-3 border-2 border-gray-700 p-4">
             <img src={imageLink} />
@@ -15,6 +15,8 @@ const Card = (props) => {
             </h2>
             <br />
             <p>Complexity: {complexity}/5 Stars</p>
+            <br />
+            <p>Cooperation: {cooperation}/5</p>
             <br />
             <p>Effort: {effort} Hours/Week</p>
             <br />

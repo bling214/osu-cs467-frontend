@@ -34,6 +34,7 @@ function App() {
         imageLink = {proj.img_url}
         projTitle={proj.title} 
         complexity="TBD"
+        cooperation="TBD"
         effort="TBD"
         techTags={proj.tech_tags.join(', ')}
         projLink={proj.portal_url}
