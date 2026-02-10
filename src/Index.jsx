@@ -7,8 +7,6 @@ import Card from './Card.jsx';
 import { useEffect, useState } from "react";
 import supabase from "./supabase-client";
 import React from "react";
-import Home from './Index.jsx';
-import Form from './Form.jsx';
 
 function Index() {
   const [projs, setProjs] = useState([]);
@@ -36,6 +34,7 @@ function Index() {
         imageLink = {proj.img_url}
         projTitle={proj.title} 
         complexity="TBD"
+        cooperation="TBD"
         effort="TBD"
         techTags={proj.tech_tags}
         projLink={proj.portal_url}

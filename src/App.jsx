@@ -31,15 +31,15 @@ function App() {
        {projs.map((proj)=> (
         <Card 
         key={proj.id}
-        imageLink = {proj.img_url}
-        projTitle={proj.title} 
-        complexity="TBD"
-        cooperation="TBD"
-        effort="TBD"
-        techTags={proj.tech_tags.join(', ')}
-        projLink={proj.portal_url}
-        numRatings="TBD"
-        ratingsLink="#"></Card>
+        image_link = {proj.img_url}
+        project_title={proj.title} 
+        complexity_rating="TBD"
+        cooperation_rating="TBD"
+        effort_rating="TBD"
+        tech_tags={proj.tech_tags.join(', ')}
+        project_link={proj.portal_url}
+        number_of_ratings="TBD"
+        ratings_link="#"></Card>
        ))}
     </div>
   );
