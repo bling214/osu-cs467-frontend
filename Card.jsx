@@ -14,7 +14,7 @@ const Card = (props) => {
                 <strong>{project_title}</strong>
             </h2>
             <br />
-            <p>Complexity Rating: {complexity_rating}/5 Stars</p>
+            <p>Complexity Rating: {complexity_rating}/5</p>
             <br />
             <p>Cooperation Rating: {cooperation_rating}/5</p>
             <br />

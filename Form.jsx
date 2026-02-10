@@ -1,7 +1,6 @@
 import "./Form.css";
 import ReactDOM from "react-dom/client";
 import { useEffect, useState } from "react";
-import { BrowserRouter, useNavigate } from "react-router-dom";
 import supabase from "./supabase-client";
 import React from "react";
 
@@ -10,11 +9,10 @@ function Form() {
     const currentYear = new Date().getFullYear();
     const [projs, setProjs] = useState([]);
     const [selectProj, setSelectProj] = useState('');
-    const [selectUserId, setSelectUserId] = useState('');
     const [selectTerm, setSelectTerm] = useState('');
     const [selectTermYear, setSelectTermYear] = useState(currentYear);
     const [selectComp, setSelectComp] = useState('');
-    const [selectHours, setSelectHours] = useState('');
+    const [selectEffort, setSelectEffort] = useState('');
     const [selectCoop, setSelectCoop] = useState('');
     const [selectComment, setSelectComment] = useState('');
     const [newReview, setNewReview] = useState({
@@ -37,10 +35,6 @@ function Form() {
         setSelectProj(e.target.value)
     }
 
-    const handleUserIdChange = (e) => {
-        setSelectUserId(e.target.value)
-    }
-
     const handleTerm = (e) => {
         setSelectTerm(e.target.value)
     }
@@ -53,8 +47,8 @@ function Form() {
         setSelectComp(e.target.value)
     }
 
-    const handleHours = (e) => {
-        setSelectHours(e.target.value)
+    const handleEffortChange = (e) => {
+        setSelectEffort(e.target.value)
     }
 
     const handleCoopChange = (e) => {
@@ -91,12 +85,11 @@ function Form() {
         .from('reviews')
         .insert({
             project_id: newReview.project_id,
-            user_id: newReview.user_id,
             academic_year: newReview.academic_year,
             academic_term: newReview.academic_term,
             complexity_rating: newReview.complexity_rating,
-            effort_rating: newReview.effort_rating,
             cooperation_rating: newReview.cooperation_rating,
+            effort_rating: newReview.effort_rating,
             review_text: newReview.review_text,
         })
         if (error) {
@@ -120,12 +113,6 @@ function Form() {
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td>User ID: </td>
-                        <td>
-                            <input type="text" name="user_id" value={selectUserId} onChange={handleUserIdChange} />
-                        </td>
-                    </tr>
                     <tr>
                         <td> Select Project: </td>
                         <td>
@@ -182,9 +169,9 @@ function Form() {
                 </td>
             </tr>
             <tr>
-                <td>Effort Rating (Hours/Week): </td>
+                <td>Effort Rating: </td>
                 <td>
-                    <select type="number" name="complexity_rating" value={selectCoop} onChange={handleCompChange}>
+                    <select type="number" name="effort_rating" value={selectEffort} onChange={handleEffortChange}>
                         <option value="1">1 - Very Low</option>
                         <option value="2">2 - Low</option>
                         <option value="3">3 - Moderate</option>
