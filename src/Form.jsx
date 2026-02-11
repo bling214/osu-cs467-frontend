@@ -1,7 +1,10 @@
 import { useEffect, useState } from "react";
 import supabase from "./supabase-client";
+import { Link, useNavigate } from "react-router-dom";
 
 function Form() {
+    const navigate = useNavigate();
+
     const currentYear = new Date().getFullYear();
     const [projs, setProjs] = useState([]);
     const [loading, setLoading] = useState(false);
@@ -43,11 +46,11 @@ function Form() {
 
         const payload = {
             project_id: selectProj,
-            academic_year: parseInt(selectTermYear),
+            academic_year: parseInt(selectTermYear, 10),
             academic_term: selectTerm,
-            complexity_rating: parseInt(selectComp),
-            cooperation_rating: parseInt(selectCoop),
-            effort_rating: parseInt(selectEffort),
+            complexity_rating: parseInt(selectComp, 10),
+            cooperation_rating: parseInt(selectCoop, 10),
+            effort_rating: parseInt(selectEffort, 10),
             review_text: selectComment,
         };
 
@@ -61,15 +64,14 @@ function Form() {
             alert("Error: " + error.message);
         } else {
             alert("Review submitted successfully to Supabase!");
-            // Reset form or redirect
-            window.location.href = "/";
+            navigate("/");
         }
         setLoading(false);
     }
 
     return (
         <div>
-            <a href="/">Return to Home</a>
+            <Link to="/">Return to Home</Link>
             <br />
             <h2 className="text-4xl font-bold text-gray-800 mb-8 border-l-4 border-blue-600 pl-4">
                 Submit a Project Review
