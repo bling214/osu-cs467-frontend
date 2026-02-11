@@ -1,198 +1,166 @@
 import "./Form.css";
-import ReactDOM from "react-dom/client";
 import { useEffect, useState } from "react";
 import supabase from "./supabase-client";
-import React from "react";
 
 function Form() {
-    const minHours=1;
     const currentYear = new Date().getFullYear();
     const [projs, setProjs] = useState([]);
+    const [loading, setLoading] = useState(false);
+
+    // Individual states to handle form inputs
     const [selectProj, setSelectProj] = useState('');
-    const [selectTerm, setSelectTerm] = useState('');
+    const [selectTerm, setSelectTerm] = useState('Winter');
     const [selectTermYear, setSelectTermYear] = useState(currentYear);
-    const [selectComp, setSelectComp] = useState('');
-    const [selectEffort, setSelectEffort] = useState('');
-    const [selectCoop, setSelectCoop] = useState('');
+    const [selectComp, setSelectComp] = useState('3');
+    const [selectEffort, setSelectEffort] = useState('3');
+    const [selectCoop, setSelectCoop] = useState('3');
     const [selectComment, setSelectComment] = useState('');
-    const [newReview, setNewReview] = useState({
-        project_id: '',
-        user_id: '',
-        academic_year: '',
-        academic_term: '',
-        complexity_rating: '',
-        effort_rating: '',
-        cooperation_rating: '',
-        review_text: ''
-    });
 
     const yearList = [];
-    for (let i=2000; i<=currentYear; i++){
+    for (let i = 2000; i <= currentYear; i++) {
         yearList.push(i);
-    }
-
-    const handleProjChange = (e) => {
-        setSelectProj(e.target.value)
-    }
-
-    const handleTerm = (e) => {
-        setSelectTerm(e.target.value)
-    }
-
-    const handleTermYear = (e) => {
-        setSelectTermYear(e.target.value)
-    }
-
-    const handleCompChange = (e) => {
-        setSelectComp(e.target.value)
-    }
-
-    const handleEffortChange = (e) => {
-        setSelectEffort(e.target.value)
-    }
-
-    const handleCoopChange = (e) => {
-        setSelectCoop(e.target.value)
-    }
-
-    const handleComment = (e) => {
-        setSelectComment(e.target.value)
-    }
-
-    const fetchReviews = async () => {
-        const{data} = await supabase.from("reviews").select("*");
-        if (data) {
-            setNewReview(data);
-        }
     }
 
     useEffect(() => {
         getProjs();
-        fetchReviews();
     }, []);
 
     async function getProjs() {
-        const {data, error} = await supabase.from("projects").select("*").order("title", {"ascending": true});
+        const { data, error } = await supabase
+            .from("projects")
+            .select("*")
+            .order("title", { ascending: true });
+        
         if (error) {
-            console.log("Error: ", error);
+            console.error("Error fetching projects: ", error);
         } else {
             setProjs(data);
         }
     }
 
-    async function addReview (e){
-        await supabase
-        .from('reviews')
-        .insert({
-            project_id: newReview.project_id,
-            academic_year: newReview.academic_year,
-            academic_term: newReview.academic_term,
-            complexity_rating: newReview.complexity_rating,
-            cooperation_rating: newReview.cooperation_rating,
-            effort_rating: newReview.effort_rating,
-            review_text: newReview.review_text,
-        })
+    async function addReview(e) {
+        e.preventDefault();
+        setLoading(true);
+
+        const payload = {
+            project_id: selectProj,
+            academic_year: parseInt(selectTermYear),
+            academic_term: selectTerm,
+            complexity_rating: parseInt(selectComp),
+            cooperation_rating: parseInt(selectCoop),
+            effort_rating: parseInt(selectEffort),
+            review_text: selectComment,
+        };
+
+        const { data, error } = await supabase
+            .from('reviews')
+            .insert([payload])
+            .select();
+
         if (error) {
-            console.log(error);
+            console.error("Supabase Error:", error.message);
+            alert("Error: " + error.message);
         } else {
-            setNewReview((prev) => [data, ...prev]);
+            alert("Review submitted successfully to Supabase!");
+            // Reset form or redirect
+            window.location.href = "/";
         }
+        setLoading(false);
     }
 
-  return (
-    <div>
-        <a href="/">Return to Home</a>
-        <br />
-        <br />
-        <form onSubmit={addReview}>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Parameters</th>
-                        <th>Options</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td> Select Project: </td>
-                        <td>
-                            <select type="text" name="project_id" value={selectProj} onChange={handleProjChange}>
-                                {projs.map((proj) => (
-                                <option key={proj.id} value={proj.id}>{proj.title}</option>
-                                ))}     
-                            </select>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td> Select Academic Term: </td>
-                        <td>
-                            <select type="text" name='academic_term' value={selectTerm} onChange={handleTerm}>
-                                <option value="Winter">Winter</option>
-                                <option value="Spring">Spring</option>
-                                <option value="Summer">Summer</option>
-                                <option value="Fall">Fall</option>
-                            </select>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td> Select Academic Year: </td>
-                        <td>
-                            <select text="number" name="academic_year" value={selectTermYear} onChange={handleTermYear}>
+    return (
+        <div>
+            <a href="/">Return to Home</a>
+            <br />
+            <h2 className="text-4xl font-bold text-gray-800 mb-8 border-l-4 border-blue-600 pl-4">
+                Submit a Project Review
+            </h2>
+            <form onSubmit={addReview}>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Parameters</th>
+                            <th>Options</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td> Select Project: </td>
+                            <td>
+                                <select value={selectProj} onChange={(e) => setSelectProj(e.target.value)} required>
+                                    <option value="">-- Choose a Project --</option>
+                                    {projs.map((proj) => (
+                                        <option key={proj.id} value={proj.id}>{proj.title}</option>
+                                    ))}
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td> Academic Term: </td>
+                            <td>
+                                <select value={selectTerm} onChange={(e) => setSelectTerm(e.target.value)}>
+                                    <option value="Winter">Winter</option>
+                                    <option value="Spring">Spring</option>
+                                    <option value="Summer">Summer</option>
+                                    <option value="Fall">Fall</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td> Academic Year: </td>
+                            <td>
+                                <select value={selectTermYear} onChange={(e) => setSelectTermYear(e.target.value)}>
                                     {yearList.map(year => (
                                         <option key={year} value={year}>{year}</option>
                                     ))}
-                            </select>
-                        </td>
-                    </tr>
-            <tr>
-                <td>Complexity Rating: </td>
-                <td>
-                    <select type="number" name="complexity_rating" value={selectComp} onChange={handleCompChange}>
-                        <option value="1">1 - Very Easy</option>
-                        <option value="2">2 - Easy</option>
-                        <option value="3">3 - Moderate</option>
-                        <option value="4">4 - Difficult</option>
-                        <option value="5">5 - Extremely Difficult</option>
-                    </select>
-                </td>
-            </tr>
-            <tr>
-                <td>Cooperation Rating: </td>
-                <td>
-                    <select type="number" name="cooperation_rating" value={selectCoop} onChange={handleCoopChange}>
-                        <option value="1">1 - Poor</option>
-                        <option value="2">2 - Bad</option>
-                        <option value="3">3 - Average</option>
-                        <option value="4">4 - Good</option>
-                        <option value="5">5 - Excellent</option>
-                    </select>
-                </td>
-            </tr>
-            <tr>
-                <td>Effort Rating: </td>
-                <td>
-                    <select type="number" name="effort_rating" value={selectEffort} onChange={handleEffortChange}>
-                        <option value="1">1 - Very Low</option>
-                        <option value="2">2 - Low</option>
-                        <option value="3">3 - Moderate</option>
-                        <option value="4">4 - High</option>
-                        <option value="5">5 - Very High</option>
-                    </select>
-                </td>
-            </tr>
-            <tr>
-                <td>Review: </td>
-                <td>
-                    <input type="text" name="review_text" value={selectComment} onChange={handleComment} />
-                </td>
-            </tr>
-        </tbody>
-        </table>
-        <br />
-        <button type="submit">Submit</button>
-    </form>
-</div>
-);
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Complexity Rating: </td>
+                            <td>
+                                <select value={selectComp} onChange={(e) => setSelectComp(e.target.value)}>
+                                    {[1, 2, 3, 4, 5].map(num => <option key={num} value={num}>{num}</option>)}
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Cooperation Rating: </td>
+                            <td>
+                                <select value={selectCoop} onChange={(e) => setSelectCoop(e.target.value)}>
+                                    {[1, 2, 3, 4, 5].map(num => <option key={num} value={num}>{num}</option>)}
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Effort Rating: </td>
+                            <td>
+                                <select value={selectEffort} onChange={(e) => setSelectEffort(e.target.value)}>
+                                    {[1, 2, 3, 4, 5].map(num => <option key={num} value={num}>{num}</option>)}
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Review: </td>
+                            <td>
+                                <textarea 
+                                    className="border p-1 w-full"
+                                    value={selectComment} 
+                                    onChange={(e) => setSelectComment(e.target.value)} 
+                                    placeholder="Tell us about your experience..."
+                                    required
+                                />
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <br />
+                <button type="submit" disabled={loading} className="bg-blue-500 text-white p-2 rounded">
+                    {loading ? "Submitting..." : "Submit Review"}
+                </button>
+            </form>
+        </div>
+    );
 }
 
-ReactDOM.createRoot(document.getElementById('form')).render(<Form />);
+export default Form;

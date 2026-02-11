@@ -2,47 +2,33 @@
 // https://supabase.com/docs/guides/getting-started/quickstarts/reactjs
 // https://www.youtube.com/watch?v=tW1HO7i9EIM
 
-import './App.css';
-import Card from './Card.jsx';
-import { useEffect, useState } from "react";
-import supabase from "./supabase-client";
-import React from "react";
+import { Routes, Route, Link } from "react-router-dom";
+import HomeView from "./HomeView.jsx";
+import Form from "./Form.jsx";
 
 function App() {
-  const [projs, setProjs] = useState([]);
+return (
+  <div className="min-h-screen bg-gray-50">
+    {/* --- PERSISTENT HEADER --- */}
+    <header className="py-16 bg-white border-b border-gray-100 mb-10">
+      <h1 className="text-center">
+        <Link to="/" className="inline-block hover:scale-[1.02] transition-transform">
+          <span className="block text-7xl font-extrabold text-gray-900 leading-tight tracking-normal">
+            Project Experience Explorer
+          </span>
+        </Link>
+      </h1>
+    </header>
 
-  useEffect(() => {
-    getProjs();
-  }, []);
-
-  async function getProjs(){
-    const {data, error} = await supabase.from("projects").select();
-    if (error) {
-      console.log("Error: ", error);
-    } else {
-    setProjs(data);
-    }
-  };
-  return (
-
-    // Reference for grid format:
-    //https://dev.to/musselmanth/the-dynamic-css-grid-configuration-ive-been-looking-for-1ogd
-    <div className="grid grid-cols-[repeat(auto-fit,_minmax(300px,_1fr))]">
-       {projs.map((proj)=> (
-        <Card 
-        key={proj.id}
-        image_link = {proj.img_url}
-        project_title={proj.title} 
-        complexity_rating="TBD"
-        cooperation_rating="TBD"
-        effort_rating="TBD"
-        tech_tags={proj.tech_tags.join(', ')}
-        project_link={proj.portal_url}
-        number_of_ratings="TBD"
-        ratings_link="#"></Card>
-       ))}
-    </div>
-  );
+    {/* --- DYNAMIC CONTENT --- */}
+    <main className="max-w-6xl mx-auto px-4">
+      <Routes>
+        <Route path="/" element={<HomeView />} />
+        <Route path="/form" element={<Form />} />
+      </Routes>
+    </main>
+  </div>
+);
 }
 
 export default App;
