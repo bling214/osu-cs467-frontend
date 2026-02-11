@@ -2,6 +2,30 @@ import { useEffect, useState } from "react";
 import supabase from "./supabase-client";
 import { Link, useNavigate } from "react-router-dom";
 
+const complexityLevels = {
+    1: "1 - Very Easy",
+    2: "2 - Easy",
+    3: "3 - Moderate",
+    4: "4 - Difficult",
+    5: "5 - Extremely Difficult"
+};
+
+const cooperationLevels = {
+    1: "1 - Poor",
+    2: "2 - Bad",
+    3: "3 - Average",
+    4: "4 - Good",
+    5: "5 - Excellent"
+};
+
+const effortLevels = {
+    1: "1 - Very Low",
+    2: "2 - Low",
+    3: "3 - Moderate",
+    4: "4 - High",
+    5: "5 - Very High"
+};
+
 function Form() {
     const navigate = useNavigate();
 
@@ -121,7 +145,9 @@ function Form() {
                             <td>Complexity Rating: </td>
                             <td>
                                 <select value={selectComp} onChange={(e) => setSelectComp(e.target.value)}>
-                                    {[1, 2, 3, 4, 5].map(num => <option key={num} value={num}>{num}</option>)}
+                                    {Object.keys(complexityLevels).map(num => (
+                                        <option key={num} value={num}>{complexityLevels[num]}</option>
+                                    ))}
                                 </select>
                             </td>
                         </tr>
@@ -129,7 +155,9 @@ function Form() {
                             <td>Cooperation Rating: </td>
                             <td>
                                 <select value={selectCoop} onChange={(e) => setSelectCoop(e.target.value)}>
-                                    {[1, 2, 3, 4, 5].map(num => <option key={num} value={num}>{num}</option>)}
+                                    {Object.keys(cooperationLevels).map(num => (
+                                        <option key={num} value={num}>{cooperationLevels[num]}</option>
+                                    ))}
                                 </select>
                             </td>
                         </tr>
@@ -137,7 +165,9 @@ function Form() {
                             <td>Effort Rating: </td>
                             <td>
                                 <select value={selectEffort} onChange={(e) => setSelectEffort(e.target.value)}>
-                                    {[1, 2, 3, 4, 5].map(num => <option key={num} value={num}>{num}</option>)}
+                                    {Object.keys(effortLevels).map(num => (
+                                        <option key={num} value={num}>{effortLevels[num]}</option>
+                                    ))}
                                 </select>
                             </td>
                         </tr>
