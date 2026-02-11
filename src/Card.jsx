@@ -2,8 +2,6 @@
 // https://v2.tailwindcss.com/docs
 // https://www.youtube.com/watch?v=IJ85kCdqWao
 
-import "./App.css"
-
 const Card = (props) => {
     const {project_title, complexity_rating, cooperation_rating, effort_rating, tech_tags, project_link, number_of_ratings,ratings_link, image_link} = props;
     return (

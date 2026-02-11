@@ -24,4 +24,14 @@ a {
   margin-bottom: 1em;
 }
 
+table th{
+  border: 1px solid black;
+  background: gray;
+  text-align: left;
+}
+
+table td{
+  border: 1px solid black;
+  background: lightgray;
+}
 
