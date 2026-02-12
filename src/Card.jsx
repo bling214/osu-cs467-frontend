@@ -2,6 +2,8 @@
 // https://v2.tailwindcss.com/docs
 // https://www.youtube.com/watch?v=IJ85kCdqWao
 
+import { UNSAFE_getTurboStreamSingleFetchDataStrategy } from "react-router-dom";
+
 const Card = (props) => {
     const {project_title, complexity_rating, cooperation_rating, effort_rating, tech_tags, project_link, number_of_ratings,ratings_link, image_link} = props;
     return (
@@ -18,7 +20,7 @@ const Card = (props) => {
             <br />
             <p>Effort Rating: {effort_rating}/5</p>
             <br />
-            <p>Tech Tags: {tech_tags}</p>
+            <p>Tech Tags: {tech_tags.length>0 ? tech_tags : "None"}</p>
             <br />
             <a href={project_link} className="text-blue-500 underline">View Project on OSU Project Portal</a>
             <br />
