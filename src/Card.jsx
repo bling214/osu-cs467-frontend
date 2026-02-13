@@ -7,7 +7,7 @@ import { UNSAFE_getTurboStreamSingleFetchDataStrategy } from "react-router-dom";
 const Card = (props) => {
     const {project_title, complexity_rating, cooperation_rating, effort_rating, tech_tags, project_link, number_of_ratings,ratings_link, image_link} = props;
     return (
-        <div className="bg-gray-200 m-3 border-2 border-gray-700 p-4">
+        <div className="bg-gray-200 m-3 border-2 border-gray-700 p-4 max-w-xs">
             <img src={image_link} />
             <br />
             <h2>
