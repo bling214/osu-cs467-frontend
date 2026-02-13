@@ -23,6 +23,7 @@ function HomeView() {
     }
   }
 
+
   const [selectKeyword, setSelectKeyword] = useState('');
 
   return (
@@ -36,20 +37,20 @@ function HomeView() {
         <div>
           {/* Reference for search filter:
           https://www.youtube.com/watch?v=xAqCEBFGdYk */}
-        <input 
-          className="border-gray-900 border-2 p-1 w-full"
-          type="text"
-          value={selectKeyword} 
-          onChange={(e) => setSelectKeyword(e.target.value)} 
-          placeholder="Search by Project Name or Keyword..."
-        />
+          <input 
+            className="border-gray-900 border-2 p-4 mb-4 mt-4 w-full"
+            type="text"
+            value={selectKeyword} 
+            onChange={(e) => setSelectKeyword(e.target.value)} 
+            placeholder="Search by Project Name or Keyword..."
+          />
         </div>
 
       {/* Reference for grid format: 
       https://dev.to/musselmanth/the-dynamic-css-grid-configuration-ive-been-looking-for-1ogd*/}
       <div className="grid grid-cols-[repeat(auto-fill,_minmax(300px,_1fr))] gap-4">
         {projs.filter((proj) => {
-          return selectKeyword.toLowerCase() === '' ? proj : proj.title.toLowerCase().includes(selectKeyword);
+          return selectKeyword.toLowerCase() === '' ? proj : proj.title.toLowerCase().includes(selectKeyword.toLowerCase());
         }).map((proj) => (
           <Card 
             key={proj.id}
