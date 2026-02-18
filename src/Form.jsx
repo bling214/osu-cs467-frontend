@@ -1,6 +1,9 @@
 import { useEffect, useState } from "react";
-import supabase from "./supabase-client";
 import { Link, useNavigate } from "react-router-dom";
+import supabase from "@/supabase-client";
+import { debugLog } from '@/utils/logger';
+
+const IS_DEBUG = import.meta.env.VITE_DEBUG === "true";
 
 const complexityLevels = {
     1: "1 - Very Easy",
@@ -47,11 +50,7 @@ function Form() {
         yearList.push(i);
     }
 
-    useEffect(() => {
-        getProjs();
-    }, []);
-
-    async function getProjs() {
+    const getProjects = async () => {
         const { data, error } = await supabase
             .from("projects")
             .select("*")
@@ -62,36 +61,92 @@ function Form() {
         } else {
             setProjs(data);
         }
+    };
+
+    useEffect(() => {
+        getProjects();
+    }, [])
+
+async function addReview(e) {
+    e.preventDefault();
+    setLoading(true);
+
+    // 1. Client-Side Validation (Backend requires min_length=10)
+    if (selectComment.length < 10) {
+        alert("Review text must be at least 10 characters long.");
+        setLoading(false);
+        return;
     }
 
-    async function addReview(e) {
-        e.preventDefault();
-        setLoading(true);
+    try {
+        // 2. Get Supabase Session/JWT
+        const { data: { session }, error: authError } = await supabase.auth.getSession();
+        
+        let jwt;
+        if (authError || !session) {
+            console.log("No active session, attempting anonymous sign-in...");
+            const { data: anonData, error: anonError } = await supabase.auth.signInAnonymously();
+            if (anonError) throw anonError;
+            jwt = anonData.session.access_token;
+        } else {
+            jwt = session.access_token;
+        }
+        debugLog("Using JWT:", jwt);
 
-        const payload = {
-            project_id: selectProj,
-            academic_year: parseInt(selectTermYear, 10),
-            academic_term: selectTerm,
-            complexity_rating: parseInt(selectComp, 10),
-            cooperation_rating: parseInt(selectCoop, 10),
-            effort_rating: parseInt(selectEffort, 10),
-            review_text: selectComment,
+        const headers = {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${jwt}`
         };
 
-        const { data, error } = await supabase
-            .from('reviews')
-            .insert([payload])
-            .select();
+        const API_URL = import.meta.env.VITE_API_BASE_URL;
 
-        if (error) {
-            console.error("Supabase Error:", error.message);
-            alert("Error: " + error.message);
-        } else {
-            alert("Review submitted successfully to Supabase!");
-            navigate("/");
+        // 3. Initialize Profile (Ensure User Exists in Backend)
+        const profileRes = await fetch(`${API_URL}/profiles/init`, {
+            method: 'POST',
+            headers: headers
+        });
+        
+        if (!profileRes.ok) {
+            console.warn("Profile init warning:", profileRes.statusText);
         }
+
+        // 4. Construct Payload to match 'models.py' EXACTLY
+        const payload = {
+            project_id: selectProj,
+            complexity_rating: parseInt(selectComp, 10),
+            effort_rating: parseInt(selectEffort, 10),
+            cooperation_rating: parseInt(selectCoop, 10),
+            review_text: selectComment,
+            academic_term: selectTerm,
+            academic_year: parseInt(selectTermYear, 10)
+        };
+        debugLog("Payload to submit:", payload);
+
+        // 5. Send to FastAPI Backend
+        const response = await fetch(`${API_URL}/reviews/`, {
+            method: 'POST',
+            headers: headers,
+            body: JSON.stringify(payload)
+        });
+
+        const data = await response.json();
+        debugLog("API Response:", data);
+
+        if (!response.ok) {
+            // Display specific error from FastAPI (e.g., "Review already exists")
+            throw new Error(data.detail || "Failed to submit review");
+        }
+
+        alert("Review submitted successfully!");
+        navigate("/");
+
+    } catch (error) {
+        console.error("Submission Error:", error);
+        alert("Error: " + error.message);
+    } finally {
         setLoading(false);
     }
+}
 
     return (
         <div>
