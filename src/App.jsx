@@ -5,6 +5,7 @@
 import { Routes, Route, Link } from "react-router-dom";
 import HomeView from "./HomeView.jsx";
 import Form from "./Form.jsx";
+import ReviewPage from "./ReviewPage.jsx";
 
 function App() {
 return (
@@ -25,6 +26,7 @@ return (
       <Routes>
         <Route path="/" element={<HomeView />} />
         <Route path="/form" element={<Form />} />
+        <Route path="/review/:id" element={<ReviewPage />} /> 
       </Routes>
     </main>
   </div>
