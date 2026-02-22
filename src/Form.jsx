@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import supabase from "@/supabase-client";
 import { debugLog } from '@/utils/logger';
+import { apiFetch } from '@/utils/apiFetch';
 
 const IS_DEBUG = import.meta.env.VITE_DEBUG === "true";
 
@@ -84,30 +85,27 @@ async function addReview(e) {
         
         let jwt;
         if (authError || !session) {
-            console.log("No active session, attempting anonymous sign-in...");
+            debugLog("No active session, attempting anonymous sign-in...");
             const { data: anonData, error: anonError } = await supabase.auth.signInAnonymously();
             if (anonError) throw anonError;
             jwt = anonData.session.access_token;
         } else {
             jwt = session.access_token;
         }
-        debugLog("Using JWT:", jwt);
 
         const headers = {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${jwt}`
         };
 
-        const API_URL = import.meta.env.VITE_API_BASE_URL;
-
         // 3. Initialize Profile (Ensure User Exists in Backend)
-        const profileRes = await fetch(`${API_URL}/profiles/init`, {
-            method: 'POST',
-            headers: headers
-        });
-        
-        if (!profileRes.ok) {
-            console.warn("Profile init warning:", profileRes.statusText);
+        try {
+            await apiFetch('/profiles/init', {
+                method: 'POST',
+                headers: headers
+            });
+        } catch (initError) {
+             console.warn("Profile init warning:", initError.message);
         }
 
         // 4. Construct Payload to match 'models.py' EXACTLY
@@ -123,20 +121,13 @@ async function addReview(e) {
         debugLog("Payload to submit:", payload);
 
         // 5. Send to FastAPI Backend
-        const response = await fetch(`${API_URL}/reviews/`, {
+        const data = await apiFetch('/reviews/', {
             method: 'POST',
             headers: headers,
             body: JSON.stringify(payload)
         });
 
-        const data = await response.json();
         debugLog("API Response:", data);
-
-        if (!response.ok) {
-            // Display specific error from FastAPI (e.g., "Review already exists")
-            throw new Error(data.detail || "Failed to submit review");
-        }
-
         alert("Review submitted successfully!");
         navigate("/");
 

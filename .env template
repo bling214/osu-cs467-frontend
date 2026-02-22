@@ -8,7 +8,7 @@ PORT=5173
 
 # Backend API base URL (pointing to the FastAPI server)
 # This should be the Backend's base URL followed by the PORT specified in the backend .env
-# On local, the default backend URL is http://localhost:8000
+# On local, the default backend URL is either http://127.0.0.1:8000 or http://localhost:8000
 VITE_API_BASE_URL=
 
 # Enable Vite's built-in environment variable for development mode (optional, but can be useful for conditional logging)

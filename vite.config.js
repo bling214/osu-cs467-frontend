@@ -20,7 +20,7 @@ export default defineConfig(({ mode }) => {
     },
     server: {
       // 2. Use the PORT variable, or fallback to 5173 if missing
-      port: parseInt(env.PORT) || 5173,
+      port: parseInt(env.PORT, 10) || 5173,
     },
   }
 })
