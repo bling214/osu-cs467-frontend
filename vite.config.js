@@ -7,8 +7,8 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 // https://vite.dev/config/
 export default defineConfig(({ mode }) => {
-  // 1. Load ALL variables from .env, including those without VITE_ prefix
-  // The third argument '' tells VITE to load all variables, not just those starting with VITE_
+  // Load variables into the Vite Node.js context so we can access non-VITE variables (like PORT).
+  // NOTE: This does NOT expose these secrets to the browser. React still only sees VITE_-prefixed variables.
   const env = loadEnv(mode, process.cwd(), '')
 
   return {
@@ -19,7 +19,7 @@ export default defineConfig(({ mode }) => {
       },
     },
     server: {
-      // 2. Use the PORT variable, or fallback to 5173 if missing
+      // Use the PORT variable, or fallback to 5173 if missing
       port: parseInt(env.PORT, 10) || 5173,
     },
   }

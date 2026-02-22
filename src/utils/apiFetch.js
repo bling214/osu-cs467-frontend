@@ -15,9 +15,11 @@ export async function apiFetch(endpoint, options = {}) {
         throw new Error(message);
     }
 
-    // Ensure we don't end up with double slashes like "http://localhost:8000//reviews"
+    // Strip any accidental trailing slashes from the base URL
+    // Ensure the endpoint starts with exactly one slash
+    const cleanBaseUrl = API_URL.replace(/\/+$/, '');
     const cleanEndpoint = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
-    const url = `${API_URL}${cleanEndpoint}`;
+    const url = `${cleanBaseUrl}${cleanEndpoint}`;
 
     try {
         const response = await fetch(url, options);

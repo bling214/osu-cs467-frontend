@@ -4,8 +4,6 @@ import supabase from "@/supabase-client";
 import { debugLog } from '@/utils/logger';
 import { apiFetch } from '@/utils/apiFetch';
 
-const IS_DEBUG = import.meta.env.VITE_DEBUG === "true";
-
 const complexityLevels = {
     1: "1 - Very Easy",
     2: "2 - Easy",
