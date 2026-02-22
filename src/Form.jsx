@@ -49,20 +49,22 @@ function Form() {
         yearList.push(i);
     }
 
-    const getProjects = async () => {
-        const { data, error } = await supabase
-            .from("projects")
-            .select("*")
-            .order("title", { ascending: true });
-        
-        if (error) {
-            console.error("Error fetching projects: ", error);
-        } else {
-            setProjs(data);
-        }
-    };
+
 
     useEffect(() => {
+        const getProjects = async () => {
+            const { data, error } = await supabase
+                .from("projects")
+                .select("*")
+                .order("title", { ascending: true });
+            
+            if (error) {
+                console.error("Error fetching projects: ", error);
+            } else {
+                setProjs(data);
+            }
+        };
+
         getProjects();
     }, [])
 
@@ -103,7 +105,7 @@ async function addReview(e) {
                 headers: headers
             });
         } catch (initError) {
-             console.warn("Profile init warning:", initError.message);
+            console.warn("Profile init warning:", initError.message);
         }
 
         // 4. Construct Payload to match 'models.py' EXACTLY
@@ -116,16 +118,16 @@ async function addReview(e) {
             academic_term: selectTerm,
             academic_year: parseInt(selectTermYear, 10)
         };
-        debugLog("Payload to submit:", payload);
+        debugLog(`Submitting review for project ID: ${payload.project_id}`);
 
         // 5. Send to FastAPI Backend
-        const data = await apiFetch('/reviews/', {
+        await apiFetch('/reviews/', {
             method: 'POST',
             headers: headers,
             body: JSON.stringify(payload)
         });
 
-        debugLog("API Response:", data);
+        debugLog("Review submission API call succeeded.");
         alert("Review submitted successfully!");
         navigate("/");
 
