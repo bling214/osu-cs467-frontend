@@ -7,38 +7,29 @@ import React from 'react';
 function ReviewPage() {
 
   const { id } = useParams();
-  const [projects, setProjects] = useState([]);
+  const [project, setProject] = useState(null);
   const [reviews, setReviews] = useState([]);
 
   useEffect(() => {
-    getProjects();
-    getReviews();
-  }, []);
+    // Defining functions inside useEffect prevents stale closures
+    async function fetchData() {
+      const projectRes = await supabase.from("projects").select().eq("id", id).single();
+      if (!projectRes.error) setProject(projectRes.data);
 
-  async function getProjects() {
-    const { data, error } = await supabase.from("projects").select().eq("id", id).single();
-    if (error) {
-      console.log("Error: ", error);
-    } else {
-      setProjects(data || []);
+      const reviewRes = await supabase.from("reviews").select().eq("project_id", id);
+      if (!reviewRes.error) setReviews(reviewRes.data);
     }
-  }
 
-  async function getReviews() {
-    const { data, error } = await supabase.from("reviews").select().eq("project_id", id);
-    if (error) {
-      console.log("Error: ", error);
-    } else {
-      setReviews(data || []);
-    }
-  };
+    fetchData();
+  }, [id]); // Added 'id' as a dependency
+
 
   return (
     <div className="p-4">
       <Link to="/">Return to Home</Link>
       <br />
       <h2 className="text-4xl font-bold text-gray-800 mb-8 border-l-4 border-blue-600 pl-4">
-        {projects.title} Project Reviews
+        {project?.title || "Loadings..."} Project Reviews
       </h2>
       {reviews.length === 0 ? 
         <p className="text-red-500 text-2xl text-center"><strong>Sorry, there are no reviews for this project.</strong></p> : (
