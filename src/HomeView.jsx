@@ -62,7 +62,7 @@ function HomeView() {
             tech_tags={proj.tech_tags ? proj.tech_tags.join(', ') : ''}
             project_link={proj.portal_url}
             number_of_ratings="TBD"
-            ratings_link="#"
+            ratings_link={`/review/${proj.id}`}
           />
         ))}
       </div>
