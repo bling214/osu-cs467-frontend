@@ -3,7 +3,7 @@
 // https://www.youtube.com/watch?v=tW1HO7i9EIM
 
 import { useEffect, useState } from 'react';
-import supabase from './supabase-client';
+import supabase from '@/supabase-client';
 import Card from './Card.jsx';
 import { Link } from 'react-router-dom'; // Use Link instead of <a> for speed!
 
