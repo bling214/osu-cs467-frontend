@@ -19,8 +19,10 @@ function HomeView() {
     if (error) {
       console.log('Error: ', error);
     } else {
+      
       setProjs(data || []);
     }
+    
   }
 
   const [filterKeyword, setFilterKeyword] = useState('');
@@ -47,7 +49,7 @@ function HomeView() {
 
       {/* Reference for grid format: 
       https://dev.to/musselmanth/the-dynamic-css-grid-configuration-ive-been-looking-for-1ogd*/}
-      <div className="grid grid-cols-[repeat(auto-fill,_minmax(300px,_1fr))] gap-4">
+      <div className="grid grid-cols-[repeat(auto-fill,minmax(300px,1fr))] gap-4">
         {projs
           .filter((proj) => {
             return filterKeyword.toLowerCase() === ''
@@ -65,7 +67,7 @@ function HomeView() {
               tech_tags={proj.tech_tags ? proj.tech_tags.join(', ') : ''}
               project_link={proj.portal_url}
               number_of_ratings="TBD"
-              ratings_link="#"
+              ratings_link={`/review/${proj.id}`}
             />
           ))}
       </div>
