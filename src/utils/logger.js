@@ -9,7 +9,7 @@
  * // Output: [DEBUG]: API Request started { url: "/reviews", method: "POST" }
  */
 export const debugLog = (...args) => {
-    if (import.meta.env.VITE_DEBUG === "true") {
-        console.log("[DEBUG]:", ...args);
-    }
+  if (import.meta.env.VITE_DEBUG === 'true') {
+    console.log('[DEBUG]:', ...args);
+  }
 };
