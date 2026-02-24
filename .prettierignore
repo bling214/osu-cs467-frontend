@@ -1,0 +1,38 @@
+# Dependency directories
+node_modules/
+
+# Build artifacts
+dist/
+build/
+.next/
+out/
+
+# Coverage reports
+coverage/
+
+# Lock files (formatting these can cause issues)
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# Environment variables
+.env
+.env.*
+
+# Documentation/Metadata
+CHANGELOG.md
+README.md
+LICENSE
+
+# IDE and editor settings
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?

@@ -1,3 +1,15 @@
 # .env file for Vite React app
 VITE_SUPABASE_URL="https://your-id.supabase.co"
 VITE_SUPABASE_ANON_KEY="your-public-anon-key"
+
+# Vite's dev server port (default is 5173, but you can change it if needed)
+# On local, the default frontend URL is http://localhost:5173
+PORT=5173
+
+# Backend API base URL (pointing to the FastAPI server)
+# This should be the Backend's base URL followed by the PORT specified in the backend .env
+# On local, the default backend URL is either http://127.0.0.1:8000 or http://localhost:8000
+VITE_API_BASE_URL=
+
+# Enable Vite's built-in environment variable for development mode (optional, but can be useful for conditional logging)
+VITE_DEBUG=false
