@@ -1,7 +1,7 @@
 import { useState } from "react";
 
 const Comment = () => {
-    const [comment, setComment] = useState(false);
+    const [comment, setComment] = useState("");
 
     return (
         <div>
@@ -15,7 +15,7 @@ const Comment = () => {
                 />
             </div>
             <div className="text-right">
-                <button type="button" className="bg-blue-500 text-white p-2 rounded" rows={10}>
+                <button type="button" className="bg-blue-500 text-white p-2 rounded">
                 Comment
                 </button>
             </div>

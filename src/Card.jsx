@@ -22,7 +22,7 @@ const Card = (props) => {
             <br />
             <p>Tech Tags: {tech_tags.length>0 ? tech_tags : "None"}</p>
             <br />
-            <Link to={project_link} className="text-blue-500 underline">View Project on OSU Project Portal</Link>
+            <a href={project_link} className="text-blue-500 underline" target="_blank" rel="noreferrer">View Project on OSU Project Portal</a>
             <br />
             <Link to={ratings_link} className="text-blue-500 underline">View {number_of_ratings} Student Ratings</Link>
         </div>

@@ -3,9 +3,9 @@
 // https://www.youtube.com/watch?v=tW1HO7i9EIM
 
 import { Routes, Route, Link } from "react-router-dom";
-import HomeView from "./HomeView.jsx";
-import Form from "./Form.jsx";
-import ReviewPage from "./ReviewPage.jsx";
+import HomeView from "@/HomeView.jsx";
+import Form from "@/Form.jsx";
+import ReviewPage from "@/ReviewPage.jsx";
 
 function App() {
 return (

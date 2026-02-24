@@ -35,19 +35,12 @@ const Vote = ({initialUpvotes=0, initialDownvotes=0}) => {
         } else {
             // Add downvote
             setDownvotes(prev => prev + 1);
-            // Removes downvote if it existed
+            // Removes upvote if it existed
             if (userVote === 'up') setUpvotes(prev => prev - 1);
             setUserVote('down');
         }
     }
 
-    const upvote = () => {
-        setUpVoteCounter(upVoteCounter + 1);
-    }
-
-    const downvote = () => {
-        setDownVoteCounter(downVoteCounter + 1);
-    };
 
     return (
         <div className="flex items-center space-x-4">
