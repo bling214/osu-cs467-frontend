@@ -43,9 +43,17 @@ function ReviewPage() {
             academic_term={review.academic_term}
             academic_year={review.academic_year}
             review_text={review.review_text}
-            created_at_year={review.created_at?.slice(0, 4) ?? ""}
-            created_at_day={review.created_at?.slice(8, 10) ?? ""}
-            created_at_month={review.created_at?.slice(5, 7) ?? ""}
+            created_at_year={review.created_at ? String(new Date(review.created_at).getFullYear()) : ""}
+            created_at_day={
+              review.created_at
+                ? String(new Date(review.created_at).getDate()).padStart(2, "0")
+                : ""
+            }
+            created_at_month={
+              review.created_at
+                ? String(new Date(review.created_at).getMonth() + 1).padStart(2, "0")
+                : ""
+            }
             //Will implement using the backend API.
             pseudonym="TBD"
           />

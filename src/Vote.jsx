@@ -44,11 +44,19 @@ const Vote = ({initialUpvotes=0, initialDownvotes=0}) => {
 
     return (
         <div className="flex items-center space-x-4">
-            <button onClick={handleUpvote} className="flex items-center text-green-600">
+            <button
+                onClick={handleUpvote}
+                className="flex items-center text-green-600"
+                aria-label="Upvote this review"
+            >
                 <ThumbsUp size={24} className={userVote === 'up' ? "fill-current" : ""}/>
                 <span className="ml-1">{upvotes}</span>
             </button>
-            <button onClick={handleDownvote} className="flex items-center text-red-600">
+            <button
+                onClick={handleDownvote}
+                className="flex items-center text-red-600"
+                aria-label="Downvote this review"
+            >
                 <ThumbsDown size={24} className={userVote === 'down' ? "fill-current" : ""}/>
                 <span className="ml-1">{downvotes}</span>
             </button>
