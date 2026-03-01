@@ -30,6 +30,10 @@ export async function apiFetch(endpoint, options = {}) {
     throw error;
   }
 
+  // Handle 204 No Content (like DELETE requests) before attempting to parse
+  if (response.status === 204) {
+    return null;
+  }
   // Parse the data safely outside the network try/catch
   let data = null;
   const contentType = response.headers.get('content-type');

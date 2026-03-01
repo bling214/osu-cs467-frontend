@@ -19,10 +19,8 @@ function HomeView() {
     if (error) {
       console.log('Error: ', error);
     } else {
-      
       setProjs(data || []);
     }
-    
   }
 
   const [filterKeyword, setFilterKeyword] = useState('');
@@ -61,13 +59,13 @@ function HomeView() {
               key={proj.id}
               image_link={proj.img_url}
               project_title={proj.title}
-              complexity_rating="TBD"
-              cooperation_rating="TBD"
-              effort_rating="TBD"
               tech_tags={proj.tech_tags ? proj.tech_tags.join(', ') : ''}
               project_link={proj.portal_url}
-              number_of_ratings="TBD"
               ratings_link={`/review/${proj.id}`}
+              complexity_rating={proj.avg_complexity ? proj.avg_complexity : 'N/A'}
+              cooperation_rating={proj.avg_cooperation ? proj.avg_cooperation : 'N/A'}
+              effort_rating={proj.avg_effort ? proj.avg_effort : 'N/A'}
+              number_of_ratings={proj.review_count}
             />
           ))}
       </div>

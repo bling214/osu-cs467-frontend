@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import supabase from '@/supabase-client';
 import { debugLog } from '@/utils/logger';
 import { apiFetch } from '@/utils/apiFetch';
+import { getAuthenticatedHeaders } from '@/utils/auth';
 
 const complexityLevels = {
   1: '1 - Very Easy',
@@ -51,12 +51,12 @@ function Form() {
 
   useEffect(() => {
     const getProjects = async () => {
-      const { data, error } = await supabase.from('projects').select('*').order('title', { ascending: true });
-
-      if (error) {
+      try {
+        const data = await apiFetch('/projects/');
+        const sortedData = data.sort((a, b) => a.title.localeCompare(b.title));
+        setProjs(sortedData);
+      } catch (error) {
         console.error('Error fetching projects: ', error);
-      } else {
-        setProjs(data);
       }
     };
 
@@ -87,41 +87,10 @@ function Form() {
     }
 
     try {
-      // 2. Get Supabase Session/JWT
-      const {
-        data: { session },
-        error: authError,
-      } = await supabase.auth.getSession();
+      // Lazy Authentication & Profile Init via Utility with Contextual Error Handling
+      const headers = await getAuthenticatedHeaders('review');
 
-      let jwt;
-      if (authError || !session) {
-        debugLog('No active session, attempting anonymous sign-in...');
-        const { data: anonData, error: anonError } = await supabase.auth.signInAnonymously();
-        if (anonError) throw anonError;
-        jwt = anonData.session.access_token;
-      } else {
-        jwt = session.access_token;
-      }
-
-      const headers = {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${jwt}`,
-      };
-
-      // 3. Initialize Profile (Strict Error Handling)
-      try {
-        await apiFetch('/profiles/init', {
-          method: 'POST',
-          headers: headers,
-        });
-      } catch (initError) {
-        console.error('Profile init error:', initError);
-        throw new Error(
-          "We couldn't set up your profile, so your review can't be submitted right now. Please try again.",
-        );
-      }
-
-      // 4. Construct Payload safely
+      // Construct Payload safely
       const payload = {
         project_id: selectProj,
         complexity_rating: parseInt(selectComp, 10),
@@ -134,7 +103,7 @@ function Form() {
 
       debugLog(`Submitting review for project ID: ${payload.project_id}`);
 
-      // 5. Send to FastAPI Backend
+      // Send to FastAPI Backend
       await apiFetch('/reviews/', {
         method: 'POST',
         headers: headers,
