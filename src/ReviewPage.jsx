@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import supabase from '@/supabase-client';
-import { Link, useParams } from 'react-router-dom'; // Use Link instead of <a> for speed!
+import { Link, useParams } from 'react-router-dom';
 import ReviewCard from './ReviewCard.jsx';
 import { apiFetch } from '@/utils/apiFetch';
 
@@ -14,7 +14,6 @@ function ReviewPage() {
     async function fetchData() {
       setLoading(true);
 
-      // Fetch project info from FastAPI instead of Supabase
       try {
         const projectData = await apiFetch(`/projects/${id}`);
         setProject(projectData);
@@ -28,16 +27,19 @@ function ReviewPage() {
       } = await supabase.auth.getSession();
 
       try {
-        // Build the base endpoint URL
-        let endpoint = `/reviews/?project_id=${id}`;
+        const endpoint = `/reviews/?project_id=${id}`;
 
-        // If they have a session, tack their user_id onto the URL!
-        if (session && session.user && session.user.id) {
-          endpoint += `&user_id=${session.user.id}`;
+        // If user has a session, attach the secure JWT token to the headers
+        let fetchOptions = {};
+        if (session && session.access_token) {
+          fetchOptions = {
+            headers: {
+              Authorization: `Bearer ${session.access_token}`,
+            },
+          };
         }
 
-        // Fetch reviews from your FastAPI backend
-        const reviewsData = await apiFetch(endpoint);
+        const reviewsData = await apiFetch(endpoint, fetchOptions);
         setReviews(reviewsData);
       } catch (error) {
         console.error('Failed to fetch reviews:', error);
