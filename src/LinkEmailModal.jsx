@@ -18,7 +18,7 @@ const LinkEmailModal = ({ isOpen, onClose, onSuccess }) => {
 
     try {
       // CRITICAL: We use updateUser to attach credentials to the current anonymous session
-      const { data, error: updateError } = await supabase.auth.updateUser({
+      const { error: updateError } = await supabase.auth.updateUser({
         email: email,
         password: password,
       });

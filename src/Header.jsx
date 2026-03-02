@@ -42,7 +42,7 @@ const Header = () => {
     fetchUserIdentity();
 
     // Listen for auth changes so the header updates instantly if they log out
-    const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
+    const { data: authListener } = supabase.auth.onAuthStateChange((event) => {
       if (event === 'SIGNED_IN' || event === 'USER_UPDATED') {
         fetchUserIdentity();
       } else if (event === 'SIGNED_OUT') {

@@ -12,6 +12,7 @@ const ReviewCard = (props) => {
     review_id,
     upvote_count,
     downvote_count,
+    comment_count = 0,
     user_vote,
     complexity_rating,
     cooperation_rating,
@@ -26,20 +27,42 @@ const ReviewCard = (props) => {
   } = props;
 
   const [comments, setComments] = useState([]);
-  // Create a simple counter state to act as our refresh trigger
   const [refreshTrigger, setRefreshTrigger] = useState(0);
 
+  // Local state to track the comment count so we can update it instantly
+  const [localCommentCount, setLocalCommentCount] = useState(comment_count);
+
+  // State to control whether the comment section is expanded
+  const [showComments, setShowComments] = useState(false);
+  const [isLoadingComments, setIsLoadingComments] = useState(false);
+
+  // Keep local count in sync just in case the parent component re-fetches data
   useEffect(() => {
+    setLocalCommentCount(comment_count);
+  }, [comment_count]);
+
+  useEffect(() => {
+    // ONLY fetch if the user has expanded the comments section
+    if (!showComments) return;
+
     async function fetchComments() {
+      setIsLoadingComments(true);
       try {
         const data = await apiFetch(`/comments/?review_id=${review_id}`);
-        setComments(data);
+        const fetchedComments = Array.isArray(data) ? data : [];
+        setComments(fetchedComments);
+
+        // Ensure our local count perfectly matches the database reality after fetching
+        setLocalCommentCount(fetchedComments.length);
       } catch (error) {
         console.error('Failed to fetch comments:', error);
+      } finally {
+        setIsLoadingComments(false);
       }
     }
+
     fetchComments();
-  }, [review_id, refreshTrigger]); // The effect runs whenever the ID or the trigger changes!
+  }, [review_id, refreshTrigger, showComments]); // Re-runs if user opens comments section or adds a new comment
 
   return (
     <div>
@@ -78,39 +101,59 @@ const ReviewCard = (props) => {
 
         <hr className="border-gray-400 my-4" />
 
-        <div className="mb-4">
-          <h4 className="font-bold mb-2">Comments ({comments.length})</h4>
-          {comments.length === 0 ? (
-            <p className="text-sm text-gray-500 italic">No comments yet. Be the first!</p>
-          ) : (
-            <ul className="space-y-3">
-              {comments.map((c) => (
-                <li key={c.id} className="bg-white p-3 rounded shadow-sm border border-gray-300">
-                  <p className="text-sm">{c.content}</p>
-                  <p className="text-xs text-gray-500 mt-1 text-right">
-                    -{' '}
-                    <span className={!c.pseudonym || c.pseudonym === 'Unknown' ? 'italic' : ''}>
-                      {!c.pseudonym || c.pseudonym === 'Unknown' ? '[Deleted User]' : c.pseudonym}
-                    </span>{' '}
-                    on{' '}
-                    {new Date(c.created_at).toLocaleString([], {
-                      year: 'numeric',
-                      month: 'short',
-                      day: 'numeric',
-                      hour: '2-digit',
-                      minute: '2-digit',
-                      second: '2-digit',
-                      timeZoneName: 'short',
-                    })}
-                  </p>
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
+        {/* --- LAZY LOADING TOGGLE BUTTON --- */}
+        <button
+          onClick={() => setShowComments(!showComments)}
+          className="text-blue-600 hover:text-blue-800 text-sm font-semibold mb-4 flex items-center transition-colors"
+        >
+          {showComments ? 'Hide Comments' : `View / Add Comments (${localCommentCount})`}
+        </button>
 
-        {/* Tell the Comment component to simply increment the trigger on success */}
-        <Comment reviewId={review_id} onCommentAdded={() => setRefreshTrigger((prev) => prev + 1)} />
+        {/* --- CONDITIONAL COMMENT RENDER --- */}
+        {showComments && (
+          <div className="mb-4 animate-fade-in">
+            <h4 className="font-bold mb-4 text-lg border-b border-gray-300 pb-2">Comments ({localCommentCount})</h4>
+
+            {isLoadingComments ? (
+              <p className="text-sm text-gray-500 italic animate-pulse">Loading comments...</p>
+            ) : comments.length === 0 ? (
+              <p className="text-sm text-gray-500 italic mb-4">No comments yet. Be the first!</p>
+            ) : (
+              <ul className="space-y-3 mb-4">
+                {comments.map((c) => (
+                  <li key={c.id} className="bg-white p-3 rounded shadow-sm border border-gray-300">
+                    <p className="text-sm">{c.content}</p>
+                    <p className="text-xs text-gray-500 mt-1 text-right">
+                      -{' '}
+                      <span className={!c.pseudonym || c.pseudonym === 'Unknown' ? 'italic' : ''}>
+                        {!c.pseudonym || c.pseudonym === 'Unknown' ? '[Deleted User]' : c.pseudonym}
+                      </span>{' '}
+                      on{' '}
+                      {new Date(c.created_at).toLocaleString([], {
+                        year: 'numeric',
+                        month: 'short',
+                        day: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        second: '2-digit',
+                        timeZoneName: 'short',
+                      })}
+                    </p>
+                  </li>
+                ))}
+              </ul>
+            )}
+
+            <Comment
+              reviewId={review_id}
+              onCommentAdded={() => {
+                setRefreshTrigger((prev) => prev + 1);
+                // Instantly optimistically update the count for a snappy UI
+                setLocalCommentCount((prev) => prev + 1);
+              }}
+            />
+          </div>
+        )}
       </div>
     </div>
   );

@@ -46,21 +46,14 @@ const Vote = ({ reviewId, initialUpvotes = 0, initialDownvotes = 0, initialUserV
       const headers = await getAuthenticatedHeaders('vote');
 
       if (prevUserVote === targetVoteType) {
-        // Removing an existing vote
+        // Removing an existing vote entirely (toggling it off)
         await apiFetch(`/votes/${reviewId}`, {
           method: 'DELETE',
           headers,
         });
       } else {
-        // If switching, we MUST delete the old vote first
-        if (prevUserVote) {
-          await apiFetch(`/votes/${reviewId}`, {
-            method: 'DELETE',
-            headers,
-          });
-        }
-
-        // Post the new vote
+        // Switching or adding a new vote.
+        // We just POST since our backend's upsert logic will handle both creating and updating votes correctly.
         await apiFetch('/votes/', {
           method: 'POST',
           headers,

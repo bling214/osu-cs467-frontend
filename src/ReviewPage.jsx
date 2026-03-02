@@ -75,6 +75,7 @@ function ReviewPage() {
               review_id={review.id}
               upvote_count={review.upvote_count}
               downvote_count={review.downvote_count}
+              comment_count={review.comment_count}
               user_vote={review.user_vote}
               complexity_rating={review.complexity_rating}
               cooperation_rating={review.cooperation_rating}
