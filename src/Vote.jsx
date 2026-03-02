@@ -17,34 +17,47 @@ const Vote = ({ reviewId, initialUpvotes = 0, initialDownvotes = 0, initialUserV
     if (isVoting) return;
     setIsVoting(true);
 
+    // SNAPSHOT PREVIOUS STATE (For Rollback)
+    const prevUserVote = userVote;
+    const prevUpvotes = upvotes;
+    const prevDownvotes = downvotes;
+
+    // OPTIMISTIC UI UPDATE (Make it feel instant)
+    if (userVote === targetVoteType) {
+      // Scenario A: Toggling off the current vote
+      setUserVote(null);
+      if (targetVoteType === 'upvote') setUpvotes((prev) => prev - 1);
+      if (targetVoteType === 'downvote') setDownvotes((prev) => prev - 1);
+    } else {
+      // Scenario B: Switching or adding a new vote
+      setUserVote(targetVoteType);
+
+      // Remove old vote counts if switching
+      if (userVote === 'upvote') setUpvotes((prev) => prev - 1);
+      if (userVote === 'downvote') setDownvotes((prev) => prev - 1);
+
+      // Add new vote counts
+      if (targetVoteType === 'upvote') setUpvotes((prev) => prev + 1);
+      if (targetVoteType === 'downvote') setDownvotes((prev) => prev + 1);
+    }
+
+    // PERFORM BACKEND API CALLS
     try {
-      // Authenticate and get JWT headers
       const headers = await getAuthenticatedHeaders('vote');
 
-      // SCENARIO A: Removing an existing vote (clicking the same button twice)
-      if (userVote === targetVoteType) {
+      if (prevUserVote === targetVoteType) {
+        // Removing an existing vote
         await apiFetch(`/votes/${reviewId}`, {
           method: 'DELETE',
           headers,
         });
-
-        // Update UI visually
-        if (targetVoteType === 'upvote') setUpvotes((prev) => prev - 1);
-        if (targetVoteType === 'downvote') setDownvotes((prev) => prev - 1);
-        setUserVote(null);
-      }
-      // SCENARIO B: Adding a new vote or switching votes
-      else {
-        // If switching (e.g., up to down), we MUST delete the old vote first
-        if (userVote) {
+      } else {
+        // If switching, we MUST delete the old vote first
+        if (prevUserVote) {
           await apiFetch(`/votes/${reviewId}`, {
             method: 'DELETE',
             headers,
           });
-
-          // Revert old UI state
-          if (userVote === 'upvote') setUpvotes((prev) => prev - 1);
-          if (userVote === 'downvote') setDownvotes((prev) => prev - 1);
         }
 
         // Post the new vote
@@ -56,15 +69,14 @@ const Vote = ({ reviewId, initialUpvotes = 0, initialDownvotes = 0, initialUserV
             vote_type: targetVoteType,
           }),
         });
-
-        // Update UI visually for the new vote
-        if (targetVoteType === 'upvote') setUpvotes((prev) => prev + 1);
-        if (targetVoteType === 'downvote') setDownvotes((prev) => prev + 1);
-        setUserVote(targetVoteType);
       }
     } catch (error) {
-      console.error('Voting failed:', error);
-      alert(error.message);
+      // 4. ROLLBACK ON ERROR
+      console.error('Voting failed, rolling back UI:', error);
+      setUserVote(prevUserVote);
+      setUpvotes(prevUpvotes);
+      setDownvotes(prevDownvotes);
+      alert('Failed to register vote. Please try again.');
     } finally {
       setIsVoting(false);
     }

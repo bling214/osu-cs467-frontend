@@ -3,27 +3,26 @@
 // https://www.youtube.com/watch?v=tW1HO7i9EIM
 
 import { useEffect, useState } from 'react';
-import supabase from '@/supabase-client';
+import { apiFetch } from '@/utils/apiFetch';
 import Card from './Card.jsx';
 import { Link } from 'react-router-dom'; // Use Link instead of <a> for speed!
 
 function HomeView() {
   const [projs, setProjs] = useState([]);
+  const [filterKeyword, setFilterKeyword] = useState('');
 
   useEffect(() => {
-    getProjs();
-  }, []);
-
-  async function getProjs() {
-    const { data, error } = await supabase.from('projects').select();
-    if (error) {
-      console.log('Error: ', error);
-    } else {
-      setProjs(data || []);
+    async function getProjs() {
+      try {
+        const data = await apiFetch('/projects/');
+        setProjs(data || []);
+      } catch (error) {
+        console.error('Error fetching projects from backend:', error);
+      }
     }
-  }
 
-  const [filterKeyword, setFilterKeyword] = useState('');
+    getProjs();
+  }, []); // Empty dependency array means this runs once on mount
 
   return (
     <div className="p-4">
@@ -62,9 +61,9 @@ function HomeView() {
               tech_tags={proj.tech_tags ? proj.tech_tags.join(', ') : ''}
               project_link={proj.portal_url}
               ratings_link={`/review/${proj.id}`}
-              complexity_rating={proj.avg_complexity ? proj.avg_complexity : 'N/A'}
-              cooperation_rating={proj.avg_cooperation ? proj.avg_cooperation : 'N/A'}
-              effort_rating={proj.avg_effort ? proj.avg_effort : 'N/A'}
+              complexity_rating={proj.avg_complexity ?? 'N/A'}
+              cooperation_rating={proj.avg_cooperation ?? 'N/A'}
+              effort_rating={proj.avg_effort ?? 'N/A'}
               number_of_ratings={proj.review_count}
             />
           ))}

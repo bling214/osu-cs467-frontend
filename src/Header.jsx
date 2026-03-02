@@ -10,6 +10,7 @@ const Header = () => {
   const [userEmail, setUserEmail] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
+  // Listen for standard Supabase Auth changes
   useEffect(() => {
     async function fetchUserIdentity() {
       // Check if the user has any kind of active session
@@ -22,7 +23,7 @@ const Header = () => {
         setUserEmail(session.user.email);
 
         try {
-          // Fetch their generated pseudonym from Backend API
+          // Fetch user's generated pseudonym from Backend API
           const headers = { Authorization: `Bearer ${session.access_token}` };
           const profile = await apiFetch('/profiles/me', { headers });
 
@@ -52,6 +53,21 @@ const Header = () => {
 
     return () => {
       authListener.subscription.unsubscribe();
+    };
+  }, []);
+
+  // Listen for custom backend profile creations (e.g., from voting or commenting)
+  useEffect(() => {
+    const handleProfileInit = (event) => {
+      // event.detail contains the fresh pseudonym sent from auth.js
+      setPseudonym(event.detail);
+    };
+
+    window.addEventListener('profileInitialized', handleProfileInit);
+
+    // Clean up the listener when the component unmounts
+    return () => {
+      window.removeEventListener('profileInitialized', handleProfileInit);
     };
   }, []);
 
@@ -100,7 +116,8 @@ const Header = () => {
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         onSuccess={() => {
-          // The auth listener handles the state, but we can close the modal smoothly on success. No need to fetch profile here since the listener will trigger fetchUserIdentity.
+          // The auth listener handles the state, but we can close the modal smoothly on success.
+          // No need to fetch profile here since the listener will trigger fetchUserIdentity.
         }}
       />
     </>

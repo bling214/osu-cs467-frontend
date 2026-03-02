@@ -12,6 +12,9 @@ function ReviewPage() {
 
   useEffect(() => {
     async function fetchData() {
+      // CLEAR STALE DATA: Prevents UI flashing when navigating between projects
+      setProject(null);
+      setReviews([]);
       setLoading(true);
 
       try {
@@ -40,7 +43,7 @@ function ReviewPage() {
         }
 
         const reviewsData = await apiFetch(endpoint, fetchOptions);
-        setReviews(reviewsData);
+        setReviews(reviewsData || []);
       } catch (error) {
         console.error('Failed to fetch reviews:', error);
       } finally {
