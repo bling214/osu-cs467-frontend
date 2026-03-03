@@ -32,9 +32,17 @@ const Header = () => {
           // Fetch their specific pseudonym from our Backend API using their secure JWT
           const headers = { Authorization: `Bearer ${session.access_token}` };
           const profile = await apiFetch('/profiles/me', { headers });
-          if (profile?.pseudonym) setPseudonym(profile.pseudonym);
+
+          if (profile?.pseudonym) {
+            setPseudonym(profile.pseudonym);
+          } else {
+            // Explicitly clear if the backend returns a profile without a pseudonym
+            setPseudonym(null);
+          }
         } catch (error) {
           console.error('Failed to fetch profile:', error);
+          // Explicitly clear the stale pseudonym if the network request completely fails
+          setPseudonym(null);
         }
       } else {
         // If no session exists, ensure the UI resets to guest mode

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import supabase from '@/supabase-client';
 import { Eye, EyeOff } from 'lucide-react';
 
@@ -13,6 +13,18 @@ const LoginModal = ({ isOpen, onClose }) => {
   // State for UI feedback during the network request
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+
+  // Clean up states every time the modal closes
+  useEffect(() => {
+    if (!isOpen) {
+      // Whenever the modal closes, wipe all state clean so nothing leaks
+      setEmail('');
+      setPassword('');
+      setShowPassword(false);
+      setError(null);
+      setLoading(false);
+    }
+  }, [isOpen]);
 
   // If the modal is toggled off, don't render anything in the DOM
   if (!isOpen) return null;
@@ -31,10 +43,8 @@ const LoginModal = ({ isOpen, onClose }) => {
 
       if (loginError) throw loginError;
 
-      // Clear inputs on successful login
-      setEmail('');
-      setPassword('');
-      setShowPassword(false);
+      // On successful login, just close the modal.
+      // The useEffect above will automatically clear the inputs for us!
       onClose();
     } catch (err) {
       // If Supabase rejects the login (e.g., wrong password), show the error to the user
@@ -93,12 +103,8 @@ const LoginModal = ({ isOpen, onClose }) => {
           <div className="flex justify-end space-x-3 pt-4">
             <button
               type="button"
-              onClick={() => {
-                // Reset states when cancelling
-                setError(null);
-                setShowPassword(false);
-                onClose();
-              }}
+              // Call onClose to let the useEffect handle the cleanup
+              onClick={onClose}
               className="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded transition-colors"
             >
               Cancel

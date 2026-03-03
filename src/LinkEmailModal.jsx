@@ -1,17 +1,40 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import supabase from '@/supabase-client';
 import { Eye, EyeOff } from 'lucide-react';
 
 const LinkEmailModal = ({ isOpen, onClose, onSuccess }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-
-  // State to toggle password visibility
   const [showPassword, setShowPassword] = useState(false);
-
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [message, setMessage] = useState(null);
+
+  // Create a reference to store our timer ID so we can cancel it later
+  const timerRef = useRef(null);
+
+  // Clean up states every time the modal opens or closes
+  useEffect(() => {
+    if (!isOpen) {
+      // Whenever the modal closes, wipe all state clean so nothing leaks
+      setEmail('');
+      setPassword('');
+      setShowPassword(false);
+      setError(null);
+      setMessage(null);
+      setLoading(false);
+
+      // If there is a countdown running, kill it
+      if (timerRef.current) {
+        clearTimeout(timerRef.current);
+      }
+    }
+
+    // Also clear the timer if the entire component unmounts from the DOM
+    return () => {
+      if (timerRef.current) clearTimeout(timerRef.current);
+    };
+  }, [isOpen]);
 
   if (!isOpen) return null;
 
@@ -22,7 +45,7 @@ const LinkEmailModal = ({ isOpen, onClose, onSuccess }) => {
     setMessage(null);
 
     try {
-      // CRITICAL: We use updateUser to attach credentials to the current anonymous session
+      // Use updateUser to attach credentials to the current anonymous session
       const { error: updateError } = await supabase.auth.updateUser({
         email: email,
         password: password,
@@ -34,12 +57,8 @@ const LinkEmailModal = ({ isOpen, onClose, onSuccess }) => {
       // The user won't technically be fully "linked" until they click the link in their email.
       setMessage('Success! Please check your email for a confirmation link to finalize your account.');
 
-      // Auto-close after a few seconds
-      setTimeout(() => {
-        // Reset states just to be safe before closing
-        setEmail('');
-        setPassword('');
-        setShowPassword(false);
+      // Save the timer ID to our ref
+      timerRef.current = setTimeout(() => {
         onSuccess();
         onClose();
       }, 4000);
@@ -50,6 +69,9 @@ const LinkEmailModal = ({ isOpen, onClose, onSuccess }) => {
       setLoading(false);
     }
   };
+
+  // Create a boolean to check if we are in the "Success Countdown" phase
+  const isSuccessDelay = message !== null;
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
@@ -63,66 +85,65 @@ const LinkEmailModal = ({ isOpen, onClose, onSuccess }) => {
         {error && <p className="text-red-500 text-sm mb-4 bg-red-50 p-2 rounded">{error}</p>}
         {message && <p className="text-green-600 text-sm mb-4 bg-green-50 p-2 rounded">{message}</p>}
 
+        {/* 5. Disable the entire form if it's loading OR if we are waiting for the success timer */}
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Email</label>
-            <input
-              type="email"
-              required
-              // Added text-black and focus rings to match the login modal's styling
-              className="mt-1 block w-full border border-gray-300 rounded-md p-2 text-black focus:ring focus:ring-blue-200"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Password</label>
-            {/* Wrap the input in a relative div so we can position the icon inside it */}
-            <div className="relative mt-1">
+          <fieldset disabled={loading || isSuccessDelay} className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Email</label>
               <input
-                // Dynamically toggle the input type
-                type={showPassword ? 'text' : 'password'}
+                type="email"
                 required
-                minLength={6}
-                // Added pr-10 so long passwords don't hide behind the icon
-                className="block w-full border border-gray-300 rounded-md p-2 pr-10 text-black focus:ring focus:ring-blue-200"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                className="mt-1 block w-full border border-gray-300 rounded-md p-2 text-black focus:ring focus:ring-blue-200 disabled:opacity-50 disabled:bg-gray-100"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
               />
-              {/* The toggle button */}
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Password</label>
+              {/* Wrap the input in a relative div so we can position the icon inside it */}
+              <div className="relative mt-1">
+                <input
+                  // Dynamically toggle the input type
+                  type={showPassword ? 'text' : 'password'}
+                  required
+                  minLength={6}
+                  // Added pr-10 so long passwords don't hide behind the icon
+                  className="block w-full border border-gray-300 rounded-md p-2 pr-10 text-black focus:ring focus:ring-blue-200 disabled:opacity-50 disabled:bg-gray-100"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                />
+                {/* The toggle button */}
+                <button
+                  type="button"
+                  onClick={() => setShowPassword((prev) => !prev)}
+                  disabled={loading || isSuccessDelay}
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 hover:text-gray-700 disabled:opacity-50"
+                  aria-label={showPassword ? 'Hide password' : 'Show password'}
+                >
+                  {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                </button>
+              </div>
+            </div>
+
+            <div className="flex justify-end space-x-3 mt-6">
               <button
                 type="button"
-                onClick={() => setShowPassword((prev) => !prev)}
-                className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 hover:text-gray-700"
-                aria-label={showPassword ? 'Hide password' : 'Show password'}
+                onClick={onClose}
+                disabled={loading || isSuccessDelay}
+                className="px-4 py-2 text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded transition-colors disabled:opacity-50"
               >
-                {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                Cancel
+              </button>
+              <button
+                type="submit"
+                disabled={loading || isSuccessDelay}
+                className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50 transition-colors shadow-sm"
+              >
+                {loading ? 'Linking...' : isSuccessDelay ? 'Success!' : 'Link Account'}
               </button>
             </div>
-          </div>
-
-          <div className="flex justify-end space-x-3 mt-6">
-            <button
-              type="button"
-              onClick={() => {
-                // Reset password visibility if they cancel
-                setShowPassword(false);
-                onClose();
-              }}
-              disabled={loading}
-              className="px-4 py-2 text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded transition-colors"
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              disabled={loading}
-              className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50 transition-colors shadow-sm"
-            >
-              {loading ? 'Linking...' : 'Link Account'}
-            </button>
-          </div>
+          </fieldset>
         </form>
       </div>
     </div>
