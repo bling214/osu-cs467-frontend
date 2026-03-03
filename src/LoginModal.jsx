@@ -2,51 +2,45 @@ import { useState } from 'react';
 import supabase from '@/supabase-client';
 import { Eye, EyeOff } from 'lucide-react';
 
-const LinkEmailModal = ({ isOpen, onClose, onSuccess }) => {
+const LoginModal = ({ isOpen, onClose }) => {
+  // State to hold the user's input
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
   // State to toggle password visibility
   const [showPassword, setShowPassword] = useState(false);
 
+  // State for UI feedback during the network request
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [message, setMessage] = useState(null);
 
+  // If the modal is toggled off, don't render anything in the DOM
   if (!isOpen) return null;
 
-  const handleSubmit = async (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setError(null);
-    setMessage(null);
+    setError(null); // Clear any previous errors before trying again
 
     try {
-      // CRITICAL: We use updateUser to attach credentials to the current anonymous session
-      const { error: updateError } = await supabase.auth.updateUser({
-        email: email,
-        password: password,
+      // Authenticate with Supabase using the provided credentials
+      const { error: loginError } = await supabase.auth.signInWithPassword({
+        email,
+        password,
       });
 
-      if (updateError) throw updateError;
+      if (loginError) throw loginError;
 
-      // Note: Supabase usually sends a confirmation email by default.
-      // The user won't technically be fully "linked" until they click the link in their email.
-      setMessage('Success! Please check your email for a confirmation link to finalize your account.');
-
-      // Auto-close after a few seconds
-      setTimeout(() => {
-        // Reset states just to be safe before closing
-        setEmail('');
-        setPassword('');
-        setShowPassword(false);
-        onSuccess();
-        onClose();
-      }, 4000);
+      // Clear inputs on successful login
+      setEmail('');
+      setPassword('');
+      setShowPassword(false);
+      onClose();
     } catch (err) {
-      console.error('Link Email Error:', err);
+      // If Supabase rejects the login (e.g., wrong password), show the error to the user
       setError(err.message);
     } finally {
+      // Always reset the loading state, whether it succeeded or failed
       setLoading(false);
     }
   };
@@ -54,22 +48,17 @@ const LinkEmailModal = ({ isOpen, onClose, onSuccess }) => {
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
       <div className="bg-white p-6 rounded-lg shadow-xl w-full max-w-md">
-        <h3 className="text-2xl font-bold mb-2">Link Your Email</h3>
-        <p className="text-sm text-gray-600 mb-6">
-          Link an email to log in from any device, keep your specific pseudonym, and retain the ability to edit or
-          delete your past reviews.
-        </p>
+        <h3 className="text-2xl font-bold mb-4">Login</h3>
 
+        {/* Display any error messages from the login attempt */}
         {error && <p className="text-red-500 text-sm mb-4 bg-red-50 p-2 rounded">{error}</p>}
-        {message && <p className="text-green-600 text-sm mb-4 bg-green-50 p-2 rounded">{message}</p>}
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleLogin} className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700">Email</label>
             <input
               type="email"
               required
-              // Added text-black and focus rings to match the login modal's styling
               className="mt-1 block w-full border border-gray-300 rounded-md p-2 text-black focus:ring focus:ring-blue-200"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -81,11 +70,10 @@ const LinkEmailModal = ({ isOpen, onClose, onSuccess }) => {
             {/* Wrap the input in a relative div so we can position the icon inside it */}
             <div className="relative mt-1">
               <input
-                // Dynamically toggle the input type
+                // Toggle between password (bullets) and text (plaintext)
                 type={showPassword ? 'text' : 'password'}
                 required
-                minLength={6}
-                // Added pr-10 so long passwords don't hide behind the icon
+                // Add extra padding on the right (pr-10) so the text doesn't hide behind the icon
                 className="block w-full border border-gray-300 rounded-md p-2 pr-10 text-black focus:ring focus:ring-blue-200"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
@@ -102,16 +90,16 @@ const LinkEmailModal = ({ isOpen, onClose, onSuccess }) => {
             </div>
           </div>
 
-          <div className="flex justify-end space-x-3 mt-6">
+          <div className="flex justify-end space-x-3 pt-4">
             <button
               type="button"
               onClick={() => {
-                // Reset password visibility if they cancel
+                // Reset states when cancelling
+                setError(null);
                 setShowPassword(false);
                 onClose();
               }}
-              disabled={loading}
-              className="px-4 py-2 text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded transition-colors"
+              className="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded transition-colors"
             >
               Cancel
             </button>
@@ -120,7 +108,7 @@ const LinkEmailModal = ({ isOpen, onClose, onSuccess }) => {
               disabled={loading}
               className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50 transition-colors shadow-sm"
             >
-              {loading ? 'Linking...' : 'Link Account'}
+              {loading ? 'Logging in...' : 'Login'}
             </button>
           </div>
         </form>
@@ -129,4 +117,4 @@ const LinkEmailModal = ({ isOpen, onClose, onSuccess }) => {
   );
 };
 
-export default LinkEmailModal;
+export default LoginModal;

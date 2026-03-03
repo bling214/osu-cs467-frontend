@@ -103,7 +103,7 @@ const ReviewCard = (props) => {
 
         {/* --- LAZY LOADING TOGGLE BUTTON --- */}
         <button
-          onClick={() => setShowComments(!showComments)}
+          onClick={() => setShowComments((prev) => !prev)}
           className="text-blue-600 hover:text-blue-800 text-sm font-semibold mb-4 flex items-center transition-colors"
         >
           {showComments ? 'Hide Comments' : `View / Add Comments (${localCommentCount})`}
