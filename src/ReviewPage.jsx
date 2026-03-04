@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import supabase from '@/supabase-client';
 import { Link, useParams } from 'react-router-dom';
+import { ArrowLeft } from 'lucide-react';
 import ReviewCard from './ReviewCard.jsx';
 import { apiFetch } from '@/utils/apiFetch';
 
@@ -55,20 +56,25 @@ function ReviewPage() {
   }, [id]);
 
   return (
-    <div className="p-4">
-      <Link to="/">Return to Home</Link>
-      <br />
-      <h2 className="text-4xl font-bold text-gray-800 mb-8 border-l-4 border-blue-600 pl-4">
+    <div>
+      <Link
+        to="/"
+        className="inline-flex items-center gap-1.5 text-primary hover:text-primary/80 font-medium transition-colors mb-4"
+      >
+        <ArrowLeft size={18} />
+        Return to Home
+      </Link>
+      <h2 className="text-4xl font-bold text-foreground mb-8 border-l-4 border-primary pl-4 font-heading">
         {project?.title || 'Loading...'} Project Reviews
       </h2>
       {loading ? (
-        <p className="text-gray-500 text-2xl text-center italic animate-pulse">Loading reviews...</p>
+        <p className="text-muted-fg text-2xl text-center italic animate-pulse">Loading reviews...</p>
       ) : reviews.length === 0 ? (
         <p className="text-red-500 text-2xl text-center">
           <strong>Sorry, there are no reviews for this project.</strong>
         </p>
       ) : (
-        <div className="grid grid-cols-[repeat(auto-fill,minmax(500px,1fr))] gap-2">
+        <div className="grid grid-cols-[repeat(auto-fill,minmax(500px,1fr))] gap-4">
           {reviews.map((review) => (
             <ReviewCard
               key={review.id}

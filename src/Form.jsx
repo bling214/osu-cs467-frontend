@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { ArrowLeft } from 'lucide-react';
 import { debugLog } from '@/utils/logger';
 import { apiFetch } from '@/utils/apiFetch';
 import { getAuthenticatedHeaders } from '@/utils/auth';
@@ -123,9 +124,14 @@ function Form() {
 
   return (
     <div>
-      <Link to="/">Return to Home</Link>
-      <br />
-      <h2 className="text-4xl font-bold text-gray-800 mb-8 border-l-4 border-blue-600 pl-4">Submit a Project Review</h2>
+      <Link
+        to="/"
+        className="inline-flex items-center gap-1.5 text-primary hover:text-primary/80 font-medium transition-colors mb-4"
+      >
+        <ArrowLeft size={18} />
+        Return to Home
+      </Link>
+      <h2 className="text-4xl font-bold text-foreground mb-8 border-l-4 border-primary pl-4 font-heading">Submit a Project Review</h2>
       <form onSubmit={addReview}>
         <table>
           <thead>
@@ -211,7 +217,7 @@ function Form() {
               <td>Review: </td>
               <td>
                 <textarea
-                  className="border p-1 w-full"
+                  className="border border-border bg-card text-foreground rounded p-2 w-full"
                   value={selectComment}
                   onChange={(e) => setSelectComment(e.target.value)}
                   placeholder="Tell us about your experience..."
@@ -222,7 +228,7 @@ function Form() {
           </tbody>
         </table>
         <br />
-        <button type="submit" disabled={loading} className="bg-blue-500 text-white p-2 rounded">
+        <button type="submit" disabled={loading} className="bg-primary text-white px-5 py-2 rounded-lg hover:opacity-90 transition-opacity font-medium disabled:opacity-50">
           {loading ? 'Submitting...' : 'Submit Review'}
         </button>
       </form>

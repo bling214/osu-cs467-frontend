@@ -66,7 +66,7 @@ const ReviewCard = (props) => {
 
   return (
     <div>
-      <div className="bg-gray-200 m-3 border-2 border-gray-700 p-4 w-full">
+      <div className="bg-card text-foreground rounded-xl shadow-md border border-border p-5 w-full">
         <p>
           <strong>Academic Term:</strong> {academic_term} {academic_year}
         </p>
@@ -84,9 +84,9 @@ const ReviewCard = (props) => {
         <p>"{review_text}"</p>
         <br />
         <br />
-        <p className="text-sm text-gray-600">
+        <p className="text-sm text-muted-fg">
           Created on {created_at_month}/{created_at_day}/{created_at_year} by{' '}
-          <span className={!pseudonym || pseudonym === 'Unknown' ? 'italic text-gray-400' : 'font-semibold'}>
+          <span className={!pseudonym || pseudonym === 'Unknown' ? 'italic text-muted-fg' : 'font-semibold'}>
             {!pseudonym || pseudonym === 'Unknown' ? '[Deleted User]' : pseudonym}
           </span>
         </p>
@@ -99,12 +99,12 @@ const ReviewCard = (props) => {
           initialUserVote={user_vote}
         />
 
-        <hr className="border-gray-400 my-4" />
+        <hr className="border-border my-4" />
 
         {/* --- LAZY LOADING TOGGLE BUTTON --- */}
         <button
           onClick={() => setShowComments((prev) => !prev)}
-          className="text-blue-600 hover:text-blue-800 text-sm font-semibold mb-4 flex items-center transition-colors"
+          className="text-primary hover:text-primary/80 text-sm font-semibold mb-4 flex items-center transition-colors"
         >
           {showComments ? 'Hide Comments' : `View / Add Comments (${localCommentCount})`}
         </button>
@@ -112,18 +112,18 @@ const ReviewCard = (props) => {
         {/* --- CONDITIONAL COMMENT RENDER --- */}
         {showComments && (
           <div className="mb-4 animate-fade-in">
-            <h4 className="font-bold mb-4 text-lg border-b border-gray-300 pb-2">Comments ({localCommentCount})</h4>
+            <h4 className="font-bold mb-4 text-lg border-b border-border pb-2">Comments ({localCommentCount})</h4>
 
             {isLoadingComments ? (
-              <p className="text-sm text-gray-500 italic animate-pulse">Loading comments...</p>
+              <p className="text-sm text-muted-fg italic animate-pulse">Loading comments...</p>
             ) : comments.length === 0 ? (
-              <p className="text-sm text-gray-500 italic mb-4">No comments yet. Be the first!</p>
+              <p className="text-sm text-muted-fg italic mb-4">No comments yet. Be the first!</p>
             ) : (
               <ul className="space-y-3 mb-4">
                 {comments.map((c) => (
-                  <li key={c.id} className="bg-white p-3 rounded shadow-sm border border-gray-300">
+                  <li key={c.id} className="bg-tag-bg p-3 rounded shadow-sm border border-border">
                     <p className="text-sm">{c.content}</p>
-                    <p className="text-xs text-gray-500 mt-1 text-right">
+                    <p className="text-xs text-muted-fg mt-1 text-right">
                       -{' '}
                       <span className={!c.pseudonym || c.pseudonym === 'Unknown' ? 'italic' : ''}>
                         {!c.pseudonym || c.pseudonym === 'Unknown' ? '[Deleted User]' : c.pseudonym}
