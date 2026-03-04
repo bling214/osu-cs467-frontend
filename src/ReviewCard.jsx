@@ -121,7 +121,7 @@ const ReviewCard = (props) => {
             ) : (
               <ul className="space-y-3 mb-4">
                 {comments.map((c) => (
-                  <li key={c.id} className="bg-tag-bg p-3 rounded shadow-sm border border-border">
+                  <li key={c.id} className="bg-tag-bg dark:bg-secondary p-3 rounded shadow-sm border border-border">
                     <p className="text-sm">{c.content}</p>
                     <p className="text-xs text-muted-fg mt-1 text-right">
                       -{' '}
