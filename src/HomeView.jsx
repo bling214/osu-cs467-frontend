@@ -6,7 +6,7 @@ import { useEffect, useState } from 'react';
 import { apiFetch } from '@/utils/apiFetch';
 import Card from './Card.jsx';
 import { Link } from 'react-router-dom'; // Use Link instead of <a> for speed!
-import { Search } from 'lucide-react';
+import { Search, PenLine } from 'lucide-react';
 
 function HomeView() {
   const [projs, setProjs] = useState([]);
@@ -42,8 +42,9 @@ function HomeView() {
         </div>
         <Link
           to="/form"
-          className="bg-primary text-primary-fg px-6 py-3 rounded-lg hover:opacity-90 transition-opacity font-medium whitespace-nowrap"
+          className="inline-flex items-center gap-2 bg-primary text-primary-fg px-6 py-3 rounded-lg hover:opacity-90 transition-opacity font-medium whitespace-nowrap"
         >
+          <PenLine size={16} />
           Submit a Review
         </Link>
       </div>

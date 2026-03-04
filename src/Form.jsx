@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 import { debugLog } from '@/utils/logger';
 import { apiFetch } from '@/utils/apiFetch';
@@ -31,19 +31,24 @@ const effortLevels = {
 
 function Form() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
 
   const currentYear = new Date().getFullYear();
   const [projs, setProjs] = useState([]);
   const [loading, setLoading] = useState(false);
 
   // Individual states to handle form inputs
-  const [selectProj, setSelectProj] = useState('');
+  const [selectProj, setSelectProj] = useState(searchParams.get('project') || '');
   const [selectTerm, setSelectTerm] = useState('Winter');
   const [selectTermYear, setSelectTermYear] = useState(currentYear);
   const [selectComp, setSelectComp] = useState('3');
   const [selectEffort, setSelectEffort] = useState('3');
   const [selectCoop, setSelectCoop] = useState('3');
   const [selectComment, setSelectComment] = useState('');
+
+  // If navigated from a review page, determine the project name for the back link
+  const projectParam = searchParams.get('project');
+  const selectedProject = projs.find((p) => String(p.id) === String(projectParam));
 
   const yearList = [];
   for (let i = 2000; i <= currentYear; i++) {
@@ -125,11 +130,11 @@ function Form() {
   return (
     <div>
       <Link
-        to="/"
+        to={selectedProject ? `/review/${projectParam}` : '/'}
         className="inline-flex items-center gap-1.5 text-primary hover:text-primary/80 font-medium transition-colors mb-4"
       >
         <ArrowLeft size={18} />
-        Return to Home
+        {selectedProject ? `Cancel / Return to Project Reviews` : 'Return to Home'}
       </Link>
       <h2 className="text-4xl font-bold text-foreground mb-8 border-l-4 border-primary pl-4 font-heading">Submit a Project Review</h2>
       <form onSubmit={addReview}>
