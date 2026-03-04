@@ -136,9 +136,12 @@ function Form() {
         <ArrowLeft size={18} />
         {selectedProject ? `Cancel / Return to Project Reviews` : 'Return to Home'}
       </Link>
-      <h2 className="text-4xl font-bold text-foreground mb-8 border-l-4 border-primary pl-4 font-heading">Submit a Project Review</h2>
+      <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-8 border-l-4 border-primary pl-4 font-heading">
+        Submit a Project Review
+      </h2>
       <form onSubmit={addReview}>
-        <table>
+        <div className="overflow-x-auto max-w-full">
+          <table className="min-w-full">
           <thead>
             <tr>
               <th>Parameters</th>
@@ -149,7 +152,12 @@ function Form() {
             <tr>
               <td> Select Project: </td>
               <td>
-                <select value={selectProj} onChange={(e) => setSelectProj(e.target.value)} required>
+                <select
+                  value={selectProj}
+                  onChange={(e) => setSelectProj(e.target.value)}
+                  required
+                  className="max-w-xs w-full"
+                >
                   <option value="">-- Choose a Project --</option>
                   {projs.map((proj) => (
                     <option key={proj.id} value={proj.id}>
@@ -231,7 +239,8 @@ function Form() {
               </td>
             </tr>
           </tbody>
-        </table>
+          </table>
+        </div>
         <br />
         <button type="submit" disabled={loading} className="bg-primary text-white px-5 py-2 rounded-lg hover:opacity-90 transition-opacity font-medium disabled:opacity-50">
           {loading ? 'Submitting...' : 'Submit Review'}

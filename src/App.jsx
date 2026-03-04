@@ -15,22 +15,22 @@ function App() {
       {/* --- TOP NAVIGATION BAR --- */}
       <Header />
       {/* --- PERSISTENT HEADER --- */}
-      <header className="py-12 bg-secondary">
+      <header className="py-6 sm:py-10 bg-secondary">
         <h1 className="text-center font-heading">
           <Link to="/" className="inline-block hover:scale-[1.02] transition-transform">
-            <span className="block text-6xl font-extrabold leading-tight">
+            <span className="block text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold leading-tight">
               <span className="text-foreground">Project Experience </span>
               <span className="text-primary">Explorer</span>
             </span>
           </Link>
         </h1>
-        <div className="flex justify-center gap-4 mt-4 text-muted-fg">
+        <div className="flex justify-center gap-4 mt-2 sm:mt-4 text-muted-fg">
           <Users size={22} />
           <Code2 size={22} />
           <Monitor size={22} />
         </div>
-        <p className="text-center text-muted-fg mt-3 max-w-md mx-auto">
-          Browse real student reviews of OSU capstone projects — find the right fit for your senior year.
+        <p className="text-center text-sm sm:text-base text-muted-fg mt-2 sm:mt-3 max-w-md mx-auto">
+          Browse real student reviews of current OSU capstone projects.
         </p>
       </header>
       {/* --- DYNAMIC CONTENT --- */}

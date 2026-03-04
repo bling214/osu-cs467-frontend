@@ -64,7 +64,7 @@ function ReviewPage() {
         <ArrowLeft size={18} />
         Return to Home
       </Link>
-      <h2 className="text-4xl font-bold text-foreground mb-4 border-l-4 border-primary pl-4 font-heading">
+      <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-foreground mb-4 border-l-4 border-primary pl-4 font-heading">
         {project?.title || 'Loading...'} Project Reviews
       </h2>
       {/* Allows users to submit a review and prepopulates the selected project input */}
@@ -84,7 +84,7 @@ function ReviewPage() {
           <strong>Sorry, there are no reviews for this project.</strong>
         </p>
       ) : (
-        <div className="grid grid-cols-[repeat(auto-fill,minmax(500px,1fr))] gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {reviews.map((review) => (
             <ReviewCard
               key={review.id}

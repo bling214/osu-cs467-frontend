@@ -29,7 +29,7 @@ function HomeView() {
     <div>
       {/* Reference for search filter:
           https://www.youtube.com/watch?v=xAqCEBFGdYk */}
-      <div className="flex items-center gap-4 mb-8 max-w-2xl mx-auto">
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 mb-8 max-w-2xl mx-auto px-4">
         <div className="relative flex-1">
           <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-fg" />
           <input
@@ -42,7 +42,7 @@ function HomeView() {
         </div>
         <Link
           to="/form"
-          className="inline-flex items-center gap-2 bg-primary text-primary-fg px-6 py-3 rounded-lg hover:opacity-90 transition-opacity font-medium whitespace-nowrap"
+          className="inline-flex items-center justify-center gap-2 bg-primary text-primary-fg px-6 py-3 rounded-lg hover:opacity-90 transition-opacity font-medium whitespace-nowrap w-full sm:w-auto"
         >
           <PenLine size={16} />
           Submit a Review
