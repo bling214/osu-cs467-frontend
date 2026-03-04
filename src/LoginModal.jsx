@@ -69,7 +69,7 @@ const LoginModal = ({ isOpen, onClose }) => {
             <input
               type="email"
               required
-              className="mt-1 block w-full border border-gray-300 rounded-md p-2 text-black focus:ring focus:ring-blue-200"
+              className="mt-1 block w-full bg-white border border-gray-300 rounded-md p-2 text-black focus:ring focus:ring-blue-200"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
@@ -84,7 +84,7 @@ const LoginModal = ({ isOpen, onClose }) => {
                 type={showPassword ? 'text' : 'password'}
                 required
                 // Add extra padding on the right (pr-10) so the text doesn't hide behind the icon
-                className="block w-full border border-gray-300 rounded-md p-2 pr-10 text-black focus:ring focus:ring-blue-200"
+                className="block w-full bg-white border border-gray-300 rounded-md p-2 pr-10 text-black focus:ring focus:ring-blue-200"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
               />
