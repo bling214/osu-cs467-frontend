@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react';
 import { apiFetch } from '@/utils/apiFetch';
 import Card from './Card.jsx';
 import { Link } from 'react-router-dom'; // Use Link instead of <a> for speed!
+import { Search } from 'lucide-react';
 
 function HomeView() {
   const [projs, setProjs] = useState([]);
@@ -25,28 +26,31 @@ function HomeView() {
   }, []); // Empty dependency array means this runs once on mount
 
   return (
-    <div className="p-4">
-      <div className="text-center mb-8">
-        <Link to="/form" className="bg-blue-600 text-white p-3 rounded-lg hover:bg-blue-700">
-          Submit a Project Review
+    <div>
+      {/* Reference for search filter:
+          https://www.youtube.com/watch?v=xAqCEBFGdYk */}
+      <div className="flex items-center gap-4 mb-8 max-w-2xl mx-auto">
+        <div className="relative flex-1">
+          <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-fg" />
+          <input
+            className="w-full pl-10 pr-4 py-3 border border-border rounded-lg bg-card text-foreground focus:outline-none focus:ring-2 focus:ring-primary/40"
+            type="text"
+            value={filterKeyword}
+            onChange={(e) => setFilterKeyword(e.target.value)}
+            placeholder="Search by project name or keyword..."
+          />
+        </div>
+        <Link
+          to="/form"
+          className="bg-primary text-primary-fg px-6 py-3 rounded-lg hover:opacity-90 transition-opacity font-medium whitespace-nowrap"
+        >
+          Submit a Review
         </Link>
       </div>
 
-      <div>
-        {/* Reference for search filter:
-          https://www.youtube.com/watch?v=xAqCEBFGdYk */}
-        <input
-          className="border-gray-900 border-2 p-4 mb-4 mt-4 w-full"
-          type="text"
-          value={filterKeyword}
-          onChange={(e) => setFilterKeyword(e.target.value)}
-          placeholder="Search by Project Name or Keyword..."
-        />
-      </div>
-
-      {/* Reference for grid format: 
+      {/* Reference for grid format:
       https://dev.to/musselmanth/the-dynamic-css-grid-configuration-ive-been-looking-for-1ogd*/}
-      <div className="grid grid-cols-[repeat(auto-fill,minmax(300px,1fr))] gap-4">
+      <div className="grid grid-cols-[repeat(auto-fill,minmax(320px,1fr))] gap-6">
         {projs
           .filter((proj) => {
             return filterKeyword.toLowerCase() === ''

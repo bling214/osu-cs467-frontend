@@ -58,7 +58,7 @@ const LoginModal = ({ isOpen, onClose }) => {
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
       <div className="bg-white p-6 rounded-lg shadow-xl w-full max-w-md">
-        <h3 className="text-2xl font-bold mb-4">Login</h3>
+        <h3 className="text-2xl font-bold mb-4 text-gray-900">Login</h3>
 
         {/* Display any error messages from the login attempt */}
         {error && <p className="text-red-500 text-sm mb-4 bg-red-50 p-2 rounded">{error}</p>}
