@@ -145,10 +145,13 @@ function ReviewPage() {
           </div>
         </div>
       )}
+      <h3 className="text-xl font-bold text-foreground mb-4 border-b border-border pb-2">
+        Reviews ({reviews.length})
+      </h3>
       {loading ? (
         <p className="text-muted-fg text-2xl text-center italic animate-pulse">Loading reviews...</p>
       ) : reviews.length === 0 ? (
-        <p className="text-red-500 text-2xl text-center mt-16">
+        <p className="text-red-500 text-2xl text-center">
           <strong>Sorry, there are no reviews for this project.</strong>
         </p>
       ) : (
