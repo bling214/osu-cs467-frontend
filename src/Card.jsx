@@ -49,26 +49,23 @@ const Card = (props) => {
 
       {/* Content */}
       <div className="p-4 flex flex-col flex-1">
-        <h3 className="font-bold text-lg mb-2">{project_title}</h3>
+        <h3 className="font-bold text-lg mb-2 text-center">{project_title}</h3>
 
-        {/* Tags */}
-        <div className="flex flex-wrap gap-1.5 mb-3">
-          {tags.map((tag) => (
-            <span key={tag} className="text-xs font-medium bg-tag-bg text-tag-fg px-2 py-0.5 rounded-full">
-              {tag}
-            </span>
-          ))}
-        </div>
-
-        {/* Ratings */}
-        <div className="flex gap-2 mb-4">
-          <RatingBox label="Complexity" value={complexity_rating} />
-          <RatingBox label="Cooperation" value={cooperation_rating} />
-          <RatingBox label="Effort" value={effort_rating} />
-        </div>
-
-        {/* Buttons */}
-        <div className="mt-auto space-y-2">
+        {/* Tags + Ratings + Buttons pinned to bottom */}
+        <div className="mt-auto space-y-3">
+          <div className="flex flex-wrap-reverse content-end justify-center gap-1.5">
+            {tags.map((tag) => (
+              <span key={tag} className="text-xs font-medium bg-tag-bg text-tag-fg px-2 py-0.5 rounded-full">
+                {tag}
+              </span>
+            ))}
+          </div>
+          <div className="flex gap-2">
+            <RatingBox label="Complexity" value={complexity_rating} />
+            <RatingBox label="Cooperation" value={cooperation_rating} />
+            <RatingBox label="Effort" value={effort_rating} />
+          </div>
+          <div className="space-y-2">
           <a
             href={project_link}
             target="_blank"
@@ -85,6 +82,7 @@ const Card = (props) => {
             <Star size={14} />
             {number_of_ratings} Student Ratings
           </Link>
+          </div>
         </div>
       </div>
     </div>
