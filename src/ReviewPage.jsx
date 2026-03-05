@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import supabase from '@/supabase-client';
 import { Link, useParams } from 'react-router-dom';
+import { ArrowLeft, PenLine } from 'lucide-react';
 import ReviewCard from './ReviewCard.jsx';
 import { apiFetch } from '@/utils/apiFetch';
 
@@ -55,20 +56,35 @@ function ReviewPage() {
   }, [id]);
 
   return (
-    <div className="p-4">
-      <Link to="/">Return to Home</Link>
-      <br />
-      <h2 className="text-4xl font-bold text-gray-800 mb-8 border-l-4 border-blue-600 pl-4">
+    <div>
+      <Link
+        to="/"
+        className="inline-flex items-center gap-1.5 text-primary hover:text-primary/80 font-medium transition-colors mb-4"
+      >
+        <ArrowLeft size={18} />
+        Return to Home
+      </Link>
+      <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-foreground mb-4 border-l-4 border-primary pl-4 font-heading">
         {project?.title || 'Loading...'} Project Reviews
       </h2>
+      {/* Allows users to submit a review and prepopulates the selected project input */}
+      {project && (
+        <Link
+          to={`/form?project=${id}`}
+          className="inline-flex items-center gap-2 bg-primary text-white px-5 py-2 rounded-lg hover:opacity-90 transition-opacity font-medium mt-4 mb-8"
+        >
+          <PenLine size={16} />
+          Submit a Review
+        </Link>
+      )}
       {loading ? (
-        <p className="text-gray-500 text-2xl text-center italic animate-pulse">Loading reviews...</p>
+        <p className="text-muted-fg text-2xl text-center italic animate-pulse">Loading reviews...</p>
       ) : reviews.length === 0 ? (
-        <p className="text-red-500 text-2xl text-center">
+        <p className="text-red-500 text-2xl text-center mt-16">
           <strong>Sorry, there are no reviews for this project.</strong>
         </p>
       ) : (
-        <div className="grid grid-cols-[repeat(auto-fill,minmax(500px,1fr))] gap-2">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {reviews.map((review) => (
             <ReviewCard
               key={review.id}

@@ -4,7 +4,7 @@ import { apiFetch } from '@/utils/apiFetch';
 import { Link } from 'react-router-dom';
 import LinkEmailModal from './LinkEmailModal.jsx';
 import LoginModal from './LoginModal.jsx';
-import { ShieldCheck, LogOut } from 'lucide-react';
+import { ShieldCheck, LogOut, Moon, Sun } from 'lucide-react';
 
 const Header = () => {
   // User Data State
@@ -14,6 +14,17 @@ const Header = () => {
   // Modal Control State
   const [isLinkModalOpen, setIsLinkModalOpen] = useState(false);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+
+  // Dark Mode State
+  const [isDark, setIsDark] = useState(() => document.documentElement.classList.contains('dark'));
+
+  const toggleDarkMode = () => {
+    const next = !isDark;
+    setIsDark(next);
+    document.documentElement.classList.toggle('dark', next);
+    localStorage.setItem('theme', next ? 'dark' : 'light');
+  };
+  // Sync React state with the class already applied by the inline script in index.html
 
   // Set up Supabase Auth Listeners on component mount
   useEffect(() => {
@@ -82,9 +93,9 @@ const Header = () => {
 
   return (
     <>
-      <header className="bg-gray-800 text-white p-4 shadow-md flex justify-between items-center">
-        <h1 className="text-xl font-bold">
-          <Link to="/" className="hover:text-blue-300 transition-colors">
+      <header className="bg-primary text-white px-6 py-3 shadow-md flex justify-between items-center">
+        <h1 className="text-lg font-bold tracking-wide font-heading">
+          <Link to="/" className="hover:text-white/80 transition-colors">
             OSU Capstone Project Reviews
           </Link>
         </h1>
@@ -94,34 +105,36 @@ const Header = () => {
             // --- LOGGED IN VIEW (Anonymous or Linked) ---
             <div className="flex items-center space-x-4">
               <div className="flex flex-col items-end">
-                <span className="text-[10px] uppercase tracking-wider text-gray-400 font-bold">Logged in as</span>
-                <span className="font-semibold text-blue-400">{pseudonym}</span>
+                <span className="text-[10px] uppercase tracking-wider text-white/60 font-bold">Logged in as</span>
+                <span className="font-semibold">{pseudonym}</span>
               </div>
 
               {/* Conditional Email Badge/Button */}
               {userEmail ? (
-                // If they have an email, show the secure badge
                 <div
-                  className="flex items-center text-green-400 text-xs font-medium px-2 py-1 bg-gray-700 rounded-full"
+                  className="flex items-center text-green-300 text-xs font-medium px-2 py-1 bg-white/10 rounded-full"
                   title="Account secured with email"
                 >
                   <ShieldCheck size={14} className="mr-1" />
                   Secured
                 </div>
               ) : (
-                // If they are anonymous, show the prompt to link an email
                 <button
                   onClick={() => setIsLinkModalOpen(true)}
-                  className="text-xs bg-blue-600 hover:bg-blue-500 text-white px-3 py-1 rounded transition-colors shadow-sm"
+                  className="text-xs bg-white/20 hover:bg-white/30 text-white px-3 py-1 rounded transition-colors"
                 >
                   Link Email
                 </button>
               )}
 
-              {/* Logout Button (Available to all logged-in users) */}
+              {/* Dark Mode Toggle */}
+              <button onClick={toggleDarkMode} className="p-2 text-white/70 hover:text-white transition-colors" title="Toggle theme">
+                {isDark ? <Sun size={18} /> : <Moon size={18} />}
+              </button>
+
               <button
                 onClick={handleLogout}
-                className="p-2 text-gray-400 hover:text-red-400 transition-colors"
+                className="p-2 text-white/60 hover:text-red-300 transition-colors"
                 title="Log Out"
               >
                 <LogOut size={20} />
@@ -129,11 +142,14 @@ const Header = () => {
             </div>
           ) : (
             // --- GUEST VIEW ---
-            <div className="flex items-center space-x-4">
-              <span className="text-sm text-gray-400 italic">Welcome, Guest</span>
+            <div className="flex items-center space-x-3">
+              <span className="text-sm text-white/70">Welcome, Guest</span>
+              <button onClick={toggleDarkMode} className="p-1 text-white/70 hover:text-white transition-colors" title="Toggle theme">
+                {isDark ? <Sun size={18} /> : <Moon size={18} />}
+              </button>
               <button
                 onClick={() => setIsLoginModalOpen(true)}
-                className="text-sm font-medium bg-blue-600 hover:bg-blue-500 text-white px-4 py-1.5 rounded transition-colors shadow-sm"
+                className="text-sm font-medium border border-white text-white px-4 py-1 rounded hover:bg-white/10 transition-colors"
               >
                 Login
               </button>

@@ -62,7 +62,7 @@ const Comment = ({ reviewId, onCommentAdded }) => {
       </h3>
       <div>
         <textarea
-          className="w-full border border-gray-700 p-4 h-32"
+          className="w-full border border-border bg-card text-foreground rounded-lg p-4 h-32"
           placeholder="Write comment here..."
           value={comment}
           onChange={(e) => setComment(e.target.value)}
@@ -74,7 +74,7 @@ const Comment = ({ reviewId, onCommentAdded }) => {
           type="button"
           onClick={submitComment}
           disabled={loading || !comment.trim()}
-          className="bg-blue-500 text-white p-2 rounded disabled:opacity-50 disabled:cursor-not-allowed"
+          className="bg-primary text-white px-4 py-2 rounded-lg hover:opacity-90 transition-opacity font-medium disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {loading ? 'Submitting...' : 'Comment'}
         </button>

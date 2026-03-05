@@ -58,7 +58,7 @@ const LoginModal = ({ isOpen, onClose }) => {
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
       <div className="bg-white p-6 rounded-lg shadow-xl w-full max-w-md">
-        <h3 className="text-2xl font-bold mb-4">Login</h3>
+        <h3 className="text-2xl font-bold mb-4 text-gray-900">Login</h3>
 
         {/* Display any error messages from the login attempt */}
         {error && <p className="text-red-500 text-sm mb-4 bg-red-50 p-2 rounded">{error}</p>}
@@ -69,7 +69,7 @@ const LoginModal = ({ isOpen, onClose }) => {
             <input
               type="email"
               required
-              className="mt-1 block w-full border border-gray-300 rounded-md p-2 text-black focus:ring focus:ring-blue-200"
+              className="mt-1 block w-full bg-white border border-gray-300 rounded-md p-2 text-black focus:ring focus:ring-blue-200"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
@@ -84,7 +84,7 @@ const LoginModal = ({ isOpen, onClose }) => {
                 type={showPassword ? 'text' : 'password'}
                 required
                 // Add extra padding on the right (pr-10) so the text doesn't hide behind the icon
-                className="block w-full border border-gray-300 rounded-md p-2 pr-10 text-black focus:ring focus:ring-blue-200"
+                className="block w-full bg-white border border-gray-300 rounded-md p-2 pr-10 text-black focus:ring focus:ring-blue-200"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
               />
