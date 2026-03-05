@@ -1,9 +1,21 @@
 import { useEffect, useState } from 'react';
 import supabase from '@/supabase-client';
 import { Link, useParams } from 'react-router-dom';
-import { ArrowLeft, PenLine } from 'lucide-react';
+import { ArrowLeft, ExternalLink, PenLine } from 'lucide-react';
 import ReviewCard from './ReviewCard.jsx';
 import { apiFetch } from '@/utils/apiFetch';
+
+const formatRating = (value) => {
+  if (typeof value !== 'number') return 'N/A';
+  return Number.isInteger(value) ? `${value}/5` : `${value.toFixed(2)}/5`;
+};
+
+const RatingBox = ({ label, value }) => (
+  <div className="flex-1 text-center border border-border rounded px-3 py-1.5">
+    <div className="text-[10px] uppercase tracking-wide text-muted-fg font-semibold">{label}</div>
+    <div className="font-bold text-sm">{formatRating(value)}</div>
+  </div>
+);
 
 function ReviewPage() {
   const { id } = useParams();
@@ -67,15 +79,47 @@ function ReviewPage() {
       <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-foreground mb-4 border-l-4 border-primary pl-4 font-heading">
         {project?.title || 'Loading...'} Project Reviews
       </h2>
-      {/* Allows users to submit a review and prepopulates the selected project input */}
       {project && (
-        <Link
-          to={`/form?project=${id}`}
-          className="inline-flex items-center gap-2 bg-primary text-white px-5 py-2 rounded-lg hover:opacity-90 transition-opacity font-medium mt-4 mb-8"
-        >
-          <PenLine size={16} />
-          Submit a Review
-        </Link>
+        <div className="space-y-4 mb-8">
+          {project.description && (
+            <p className="text-muted-fg">{project.description}</p>
+          )}
+          {project.tech_tags && project.tech_tags.length > 0 && (
+            <div className="flex flex-wrap gap-1.5">
+              {project.tech_tags.map((tag) => (
+                <span key={tag} className="text-xs font-medium bg-tag-bg text-tag-fg px-2 py-0.5 rounded-full">
+                  {tag}
+                </span>
+              ))}
+            </div>
+          )}
+          <div className="flex gap-2 max-w-md">
+            <RatingBox label="Complexity" value={project.avg_complexity ?? 'N/A'} />
+            <RatingBox label="Cooperation" value={project.avg_cooperation ?? 'N/A'} />
+            <RatingBox label="Effort" value={project.avg_effort ?? 'N/A'} />
+          </div>
+          <div className="flex flex-wrap gap-3">
+            {project.portal_url && (
+              <a
+                href={project.portal_url}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center gap-2 border border-primary text-primary px-5 py-2 rounded-lg hover:bg-primary/5 transition-colors font-medium"
+              >
+                <ExternalLink size={16} />
+                OSU Project Portal
+              </a>
+            )}
+            {/* Allows users to submit a review and prepopulates the selected project input */}
+            <Link
+              to={`/form?project=${id}`}
+              className="inline-flex items-center gap-2 bg-primary text-white px-5 py-2 rounded-lg hover:opacity-90 transition-opacity font-medium"
+            >
+              <PenLine size={16} />
+              Submit a Review
+            </Link>
+          </div>
+        </div>
       )}
       {loading ? (
         <p className="text-muted-fg text-2xl text-center italic animate-pulse">Loading reviews...</p>
