@@ -24,14 +24,7 @@ const Header = () => {
     document.documentElement.classList.toggle('dark', next);
     localStorage.setItem('theme', next ? 'dark' : 'light');
   };
-
-  // Apply saved theme on mount
-  useEffect(() => {
-    const saved = localStorage.getItem('theme');
-    const prefersDark = saved === 'dark' || (!saved && window.matchMedia('(prefers-color-scheme: dark)').matches);
-    setIsDark(prefersDark);
-    document.documentElement.classList.toggle('dark', prefersDark);
-  }, []);
+  // Sync React state with the class already applied by the inline script in index.html
 
   // Set up Supabase Auth Listeners on component mount
   useEffect(() => {
