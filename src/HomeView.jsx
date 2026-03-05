@@ -6,7 +6,6 @@ import { useEffect, useState } from 'react';
 import { apiFetch } from '@/utils/apiFetch';
 import Card from './Card.jsx';
 import { Link } from 'react-router-dom'; // Use Link instead of <a> for speed!
-import MoreFilter from '@/MoreFilter.jsx';
 
 function HomeView() {
   const [projs, setProjs] = useState([]);
@@ -43,9 +42,7 @@ function HomeView() {
           onChange={(e) => setFilterKeyword(e.target.value)}
           placeholder="Search by Project Name or Keyword..."
         />
-        <MoreFilter className="text-center mb-8"/>
       </div>
-      
 
       {/* Reference for grid format: 
       https://dev.to/musselmanth/the-dynamic-css-grid-configuration-ive-been-looking-for-1ogd*/}
