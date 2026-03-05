@@ -142,103 +142,103 @@ function Form() {
       <form onSubmit={addReview}>
         <div className="overflow-x-auto max-w-full">
           <table className="min-w-full">
-          <thead>
-            <tr>
-              <th>Parameters</th>
-              <th>Options</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td> Select Project: </td>
-              <td>
-                <select
-                  value={selectProj}
-                  onChange={(e) => setSelectProj(e.target.value)}
-                  required
-                  className="max-w-xs w-full"
-                >
-                  <option value="">-- Choose a Project --</option>
-                  {projs.map((proj) => (
-                    <option key={proj.id} value={proj.id}>
-                      {proj.title}
-                    </option>
-                  ))}
-                </select>
-              </td>
-            </tr>
-            <tr>
-              <td> Academic Term: </td>
-              <td>
-                <select value={selectTerm} onChange={(e) => setSelectTerm(e.target.value)}>
-                  <option value="Winter">Winter</option>
-                  <option value="Spring">Spring</option>
-                  <option value="Summer">Summer</option>
-                  <option value="Fall">Fall</option>
-                </select>
-              </td>
-            </tr>
-            <tr>
-              <td> Academic Year: </td>
-              <td>
-                <select value={selectTermYear} onChange={(e) => setSelectTermYear(e.target.value)}>
-                  {yearList.map((year) => (
-                    <option key={year} value={year}>
-                      {year}
-                    </option>
-                  ))}
-                </select>
-              </td>
-            </tr>
-            <tr>
-              <td>Complexity Rating: </td>
-              <td>
-                <select value={selectComp} onChange={(e) => setSelectComp(e.target.value)}>
-                  {Object.keys(complexityLevels).map((num) => (
-                    <option key={num} value={num}>
-                      {complexityLevels[num]}
-                    </option>
-                  ))}
-                </select>
-              </td>
-            </tr>
-            <tr>
-              <td>Cooperation Rating: </td>
-              <td>
-                <select value={selectCoop} onChange={(e) => setSelectCoop(e.target.value)}>
-                  {Object.keys(cooperationLevels).map((num) => (
-                    <option key={num} value={num}>
-                      {cooperationLevels[num]}
-                    </option>
-                  ))}
-                </select>
-              </td>
-            </tr>
-            <tr>
-              <td>Effort Rating: </td>
-              <td>
-                <select value={selectEffort} onChange={(e) => setSelectEffort(e.target.value)}>
-                  {Object.keys(effortLevels).map((num) => (
-                    <option key={num} value={num}>
-                      {effortLevels[num]}
-                    </option>
-                  ))}
-                </select>
-              </td>
-            </tr>
-            <tr>
-              <td>Review: </td>
-              <td>
-                <textarea
-                  className="border border-border bg-card text-foreground rounded p-2 w-full"
-                  value={selectComment}
-                  onChange={(e) => setSelectComment(e.target.value)}
-                  placeholder="Tell us about your experience..."
-                  required
-                />
-              </td>
-            </tr>
-          </tbody>
+            <thead>
+              <tr>
+                <th>Parameters</th>
+                <th>Options</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td> Select Project: </td>
+                <td>
+                  <select
+                    value={selectProj}
+                    onChange={(e) => setSelectProj(e.target.value)}
+                    required
+                    className="max-w-xs w-full"
+                  >
+                    <option value="">-- Choose a Project --</option>
+                    {projs.map((proj) => (
+                      <option key={proj.id} value={proj.id}>
+                        {proj.title}
+                      </option>
+                    ))}
+                  </select>
+                </td>
+              </tr>
+              <tr>
+                <td> Academic Term: </td>
+                <td>
+                  <select value={selectTerm} onChange={(e) => setSelectTerm(e.target.value)}>
+                    <option value="Winter">Winter</option>
+                    <option value="Spring">Spring</option>
+                    <option value="Summer">Summer</option>
+                    <option value="Fall">Fall</option>
+                  </select>
+                </td>
+              </tr>
+              <tr>
+                <td> Academic Year: </td>
+                <td>
+                  <select value={selectTermYear} onChange={(e) => setSelectTermYear(e.target.value)}>
+                    {yearList.map((year) => (
+                      <option key={year} value={year}>
+                        {year}
+                      </option>
+                    ))}
+                  </select>
+                </td>
+              </tr>
+              <tr>
+                <td>Complexity Rating: </td>
+                <td>
+                  <select value={selectComp} onChange={(e) => setSelectComp(e.target.value)}>
+                    {Object.keys(complexityLevels).map((num) => (
+                      <option key={num} value={num}>
+                        {complexityLevels[num]}
+                      </option>
+                    ))}
+                  </select>
+                </td>
+              </tr>
+              <tr>
+                <td>Cooperation Rating: </td>
+                <td>
+                  <select value={selectCoop} onChange={(e) => setSelectCoop(e.target.value)}>
+                    {Object.keys(cooperationLevels).map((num) => (
+                      <option key={num} value={num}>
+                        {cooperationLevels[num]}
+                      </option>
+                    ))}
+                  </select>
+                </td>
+              </tr>
+              <tr>
+                <td>Effort Rating: </td>
+                <td>
+                  <select value={selectEffort} onChange={(e) => setSelectEffort(e.target.value)}>
+                    {Object.keys(effortLevels).map((num) => (
+                      <option key={num} value={num}>
+                        {effortLevels[num]}
+                      </option>
+                    ))}
+                  </select>
+                </td>
+              </tr>
+              <tr>
+                <td>Review: </td>
+                <td>
+                  <textarea
+                    className="border border-border bg-card text-foreground rounded p-2 w-full"
+                    value={selectComment}
+                    onChange={(e) => setSelectComment(e.target.value)}
+                    placeholder="Tell us about your experience..."
+                    required
+                  />
+                </td>
+              </tr>
+            </tbody>
           </table>
         </div>
         <br />

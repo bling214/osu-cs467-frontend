@@ -66,22 +66,22 @@ const Card = (props) => {
             <RatingBox label="Effort" value={effort_rating} />
           </div>
           <div className="space-y-2">
-          <a
-            href={project_link}
-            target="_blank"
-            rel="noreferrer"
-            className="flex items-center justify-center gap-2 w-full bg-primary text-primary-fg py-2 rounded-lg hover:opacity-90 transition-opacity text-sm font-medium"
-          >
-            <ExternalLink size={14} />
-            OSU Project Portal
-          </a>
-          <Link
-            to={ratings_link}
-            className="flex items-center justify-center gap-2 w-full border border-primary text-primary py-2 rounded-lg hover:bg-primary/5 transition-colors text-sm font-medium"
-          >
-            <Star size={14} />
-            {number_of_ratings} Student Ratings
-          </Link>
+            <a
+              href={project_link}
+              target="_blank"
+              rel="noreferrer"
+              className="flex items-center justify-center gap-2 w-full bg-primary text-primary-fg py-2 rounded-lg hover:opacity-90 transition-opacity text-sm font-medium"
+            >
+              <ExternalLink size={14} />
+              OSU Project Portal
+            </a>
+            <Link
+              to={ratings_link}
+              className="flex items-center justify-center gap-2 w-full border border-primary text-primary py-2 rounded-lg hover:bg-primary/5 transition-colors text-sm font-medium"
+            >
+              <Star size={14} />
+              {number_of_ratings} Student Ratings
+            </Link>
           </div>
         </div>
       </div>
