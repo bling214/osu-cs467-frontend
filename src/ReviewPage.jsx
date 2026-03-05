@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import supabase from '@/supabase-client';
 import { Link, useParams } from 'react-router-dom';
 import { ArrowLeft, ExternalLink, PenLine } from 'lucide-react';
@@ -22,6 +22,15 @@ function ReviewPage() {
   const [project, setProject] = useState(null);
   const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [descExpanded, setDescExpanded] = useState(false);
+  const [descClamped, setDescClamped] = useState(false);
+  const descRef = useRef(null);
+
+  useEffect(() => {
+    if (descRef.current) {
+      setDescClamped(descRef.current.scrollHeight > descRef.current.clientHeight);
+    }
+  }, [project]);
 
   useEffect(() => {
     async function fetchData() {
@@ -77,12 +86,27 @@ function ReviewPage() {
         Return to Home
       </Link>
       <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-foreground mb-4 border-l-4 border-primary pl-4 font-heading">
-        {project?.title || 'Loading...'} Project Reviews
+        {project?.title || 'Loading...'}
       </h2>
       {project && (
         <div className="space-y-4 mb-8">
           {project.description && (
-            <p className="text-muted-fg">{project.description}</p>
+            <div>
+              <p
+                ref={descRef}
+                className={`text-muted-fg ${!descExpanded ? 'line-clamp-4' : ''}`}
+              >
+                {project.description}
+              </p>
+              {descClamped && (
+                <button
+                  onClick={() => setDescExpanded(!descExpanded)}
+                  className="text-primary hover:text-primary/80 text-sm font-medium mt-1"
+                >
+                  {descExpanded ? 'Show less' : '...Show more'}
+                </button>
+              )}
+            </div>
           )}
           {project.tech_tags && project.tech_tags.length > 0 && (
             <div className="flex flex-wrap gap-1.5">
