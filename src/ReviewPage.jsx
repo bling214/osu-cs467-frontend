@@ -145,9 +145,6 @@ function ReviewPage() {
           </div>
         </div>
       )}
-      <h3 className="text-xl font-bold text-foreground mb-4 border-b border-border pb-2">
-        Reviews ({reviews.length})
-      </h3>
       {loading ? (
         <p className="text-muted-fg text-2xl text-center italic animate-pulse">Loading reviews...</p>
       ) : reviews.length === 0 ? (
@@ -155,6 +152,10 @@ function ReviewPage() {
           <strong>Sorry, there are no reviews for this project.</strong>
         </p>
       ) : (
+        <>
+        <h3 className="text-xl font-bold text-foreground mb-4 border-b border-border pb-2">
+          Reviews ({reviews.length})
+        </h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {reviews.map((review) => (
             <ReviewCard
@@ -179,6 +180,7 @@ function ReviewPage() {
             />
           ))}
         </div>
+        </>
       )}
     </div>
   );
