@@ -111,7 +111,7 @@ function ReviewPage() {
               </p>
               {descClamped && (
                 <button
-                  onClick={() => setDescExpanded(!descExpanded)}
+                  onClick={() => setDescExpanded(prev => !prev)}
                   className="text-primary hover:text-primary/80 text-sm font-medium mt-1"
                 >
                   {descExpanded ? 'Show less' : '...Show more'}
@@ -138,7 +138,7 @@ function ReviewPage() {
               <a
                 href={project.portal_url}
                 target="_blank"
-                rel="noreferrer"
+                rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 border border-primary text-primary px-5 py-2 rounded-lg hover:bg-primary/5 transition-colors font-medium"
               >
                 <ExternalLink size={16} />
