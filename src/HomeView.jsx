@@ -12,8 +12,9 @@ import { useEffect, useState } from 'react';
 import { apiFetch } from '@/utils/apiFetch';
 import Card from './Card.jsx';
 import { Link } from 'react-router-dom'; // Use Link instead of <a> for speed!
-import { Search, PenLine, SlidersHorizontal, X } from 'lucide-react';
+import { Search, PenLine, SlidersHorizontal, X, Dice1 } from 'lucide-react';
 import supabase from '@/supabase-client';
+import RangeFilter from './MinMaxRating.jsx';
 
 const academicTerm = {
   1: "Winter",
@@ -38,25 +39,25 @@ const cooperationRanges = [
   { id: 5, label: '> 4.0', min: 4, max: 5 }
 ];
 
-const effortRanges = [
-  { id: 1, label: '< 1.0', min: 0, max: 1 },
-  { id: 2, label: '1.0 - 2.0', min: 1, max: 2 },
-  { id: 3, label: '2.0 - 3.0', min: 2, max: 3 },
-  { id: 4, label: '3.0 - 4.0', min: 3, max: 4 },
-  { id: 5, label: '> 4.0', min: 4, max: 5 }
-];
-
 function HomeView() {
   const [projs, setProjs] = useState([]);
-  const [academicYears, setAcademicYears] = useState([]);
   const [reviews, setReviews] = useState([]);
   const [filterKeyword, setFilterKeyword] = useState('');
   const [tags, setTags] = useState([]);
   const [openFilter, setOpenFilter] = useState(false);
   const [selectedTags, setSelectedTags] = useState([]);
-  const [selectedComplexity, setSelectedComplexity] = useState([]);
-  const [selectedCooperation, setSelectedCooperation] = useState([]);
-  const [selectedEffort, setSelectedEffort] = useState([]);
+  const [minComplexity, setMinComplexity] = useState('');
+  const [maxComplexity, setMaxComplexity] = useState('');
+  const [minCooperation, setMinCooperation] = useState('');
+  const [maxCooperation, setMaxCooperation] = useState('');
+  const [minEffort, setMinEffort] = useState('');
+  const [maxEffort, setMaxEffort] = useState('');
+
+  const currentYear = new Date().getFullYear();
+  const academicYears = Array.from(
+    { length: currentYear - 2000 + 1 },
+    (_, i) => currentYear - i
+  );
 
   // Opens and closes more filter menu
   const toggleDropdown = () => {
@@ -64,13 +65,17 @@ function HomeView() {
   };
 
   // Clears all filter
+  // TO DO: Add Academic Year and Term
   const clearFilter = () => {
     setOpenFilter(false);
     setSelectedTags([]);
-    setSelectedComplexity([]);
-    setSelectedCooperation([]);
-    setSelectedEffort([]);
     setFilterKeyword('');
+    setMinComplexity('');
+    setMaxComplexity('');
+    setMinCooperation('');
+    setMaxCooperation('');
+    setMinEffort('');
+    setMaxEffort('');
   }
 
   // Event handler for Tech Tags
@@ -79,30 +84,6 @@ function HomeView() {
       prev.includes(tag)
         ? prev.filter((item) => item !== tag)
         : [...prev, tag]);
-  };
-
-  // Event handler for Complexity Ratings
-  const handleComplexityCheckbox = (rangeID) => {
-    setSelectedComplexity((prev) =>
-      prev.includes(rangeID)
-        ? prev.filter((id) => id !== rangeID)
-        : [...prev, rangeID]);
-  };
-
-  // Event handler for Cooperation Ratings
-  const handleCooperationCheckbox = (rangeID) => {
-    setSelectedCooperation((prev) =>
-      prev.includes(rangeID)
-        ? prev.filter((id) => id !== rangeID)
-        : [...prev, rangeID]);
-  };
-
-  // Event handler for Effort Ratings
-  const handleEffortCheckbox = (rangeID) => {
-    setSelectedEffort((prev) =>
-      prev.includes(rangeID)
-        ? prev.filter((id) => id !== rangeID)
-        : [...prev, rangeID]);
   };
 
   useEffect(() => {
@@ -133,25 +114,8 @@ function HomeView() {
       }
     }
 
-    // Gathering a list of all possible and selectable academic years based on review data.
-    const getAcademicYears = async () => {
-      const { data, error } = await supabase.from('reviews').select('academic_year');
-      if (error) {
-        console.log('Error: ', error);
-      } else {
-        const academicYearList = data.map(term => term.academic_year);
-        {/* Reference for creating a combined string array and sorting a list descending
-          https://github.com/AnkitSharma-007/namaste-javascript-notes
-          https://www.w3schools.com/jsref/jsref_sort.asp
-          */}
-        const uniqueTermArray = [...new Set(academicYearList)].sort().reverse();
-        setAcademicYears(uniqueTermArray || []);
-      }
-    }
-
     getProjects()
     getTags();
-    getAcademicYears();
   }, []); // Empty dependency array means this runs once on mount
 
   return (
@@ -183,112 +147,152 @@ function HomeView() {
             className="inline-flex items-center justify-center gap-2 bg-primary text-primary-fg px-6 py-3 rounded-lg hover:opacity-90 transition-opacity font-medium whitespace-nowrap w-full sm:w-auto"
             onClick={toggleDropdown}>
             <SlidersHorizontal size={20} />
-              More Filters
+            More Filters
           </button>
           <button
             className="inline-flex items-center justify-center gap-2 bg-primary text-primary-fg px-6 py-3 rounded-lg hover:opacity-90 transition-opacity font-medium whitespace-nowrap w-full sm:w-auto"
             onClick={clearFilter}>
             <X size={20} />
-              Clear Filters
+            Clear Filters
           </button>
         </div>
         {openFilter && (
-          <div className="flex items-start mt-2 w-auto rounded-md shadow-lg focus:outline-none border border-gray-600 bg-gray-400 text-justify">
+          <div className="flex gap-4 items-center justify-center mt-2 w-fit rounded-md shadow-lg focus:outline-none border border-gray-600 bg-gray-400 text-justify">
             <ul>
-              <h3 className="text-lg text-gray-900 m-2"><strong>Tech Stack</strong></h3>
-              {tags.map((tag) => <li>
-                <input
-                  type="checkbox"
-                  value={tag}
-                  onChange={() => handleTagCheckbox(tag)}
-                  checked={selectedTags.includes(tag)}
-                  className="ml-6 mr-2"
-                />{tag}</li>)}
+              <h3 className="text-lg text-gray-900 m-2 ml-6"><strong>Tech Stack</strong></h3>
+              <div className="border border-border rounded-lg max-h-48 max-w-72 overlfow-y-auto overflow-scroll p-2 ml-6 bg-card">
+                {tags.map((tag) =>
+                  <label key={tag} className="flex item-center gap-2 p-1 hover:bg-muted rounded cursor-pointer">
+                    <input
+                      type="checkbox"
+                      value={tag}
+                      className="rounded border-gray-400"
+                      onChange={() => handleTagCheckbox(tag)}
+                      checked={selectedTags.includes(tag)}
+                    />
+                    <span className="text-sm">{tag}</span>
+                  </label>
+                )}
+              </div>
             </ul>
-            {/* <ul>
-              <input
-                type="checkbox"
-                className="text-sm text-gray-700 m-2"
-              />
-              Academic Years
-              {academicYears.map((academicYear) => <li>
-                <input type="checkbox" className="ml-10" /> {academicYear}</li>)}
+            <div className="flex items-start mt-2 w-auto rounded-md shadow-lg focus:outline-none border border-gray-600 bg-gray-400 text-justify"></div>
+            <ul>
+              <h3 className="text-lg text-gray-900 m-2"><strong>Academic Years</strong></h3>
+              <div className="border border-border rounded-lg max-h-48 max-w-72 overflow-y-auto overflow-scroll p-2 bg-card">
+                {academicYears.map((academicYear) =>
+                  <label key={academicYear} className="flex item-center gap-2 p-1 hover:bg-muted rounded cursor-pointer">
+                    <input
+                      type="checkbox"
+                      value={academicYear}
+                      className="rounded border-gray-400"
+                    //onChange={() => handleTagCheckbox(tag)}
+                    //checked={selectedTags.includes(tag)}
+                    />
+                    <span className="text-sm">{academicYear}</span>
+                  </label>
+                )}
+              </div>
             </ul>
+            <div className="flex items-start mt-2 w-auto rounded-md shadow-lg focus:outline-none border border-gray-600 bg-gray-400 text-justify"></div>
             <ul>
-              <input
-                type="checkbox"
-                className="text-sm text-gray-700 m-2"
-              />
-              Academic Terms
-              {Object.keys(academicTerm).map((num) => (<li>
-                <input
-                  type="checkbox"
-                  key="num"
-                  value={academicTerm[num]}
-                  className="ml-6" /> {academicTerm[num]}</li>))}
-            </ul> */}
-            <ul>
-              <h3 className="text-lg text-gray-900 m-2"><strong>Complexity Ranges</strong></h3>
-              {complexityRanges.map((range) => (<li>
-                <input
-                  type="checkbox"
-                  id={range.id}
-                  value={range.label}
-                  onChange={() => handleComplexityCheckbox(range.id)}
-                  checked={selectedComplexity.includes(range.id)}
-                  className="ml-6 mr-2" />{range.label}</li>))}            </ul>
-            <ul><h3 className="text-lg text-gray-900 m-2"><strong>Cooperation Ranges</strong></h3>
-              {cooperationRanges.map((range) => (<li>
-                <input
-                  type="checkbox"
-                  id={range.id}
-                  value={range.label}
-                  onChange={() => handleCooperationCheckbox(range.id)}
-                  checked={selectedCooperation.includes(range.id)}
-                  className="ml-6 mr-2" />{range.label}</li>))}            </ul>
-            <ul>
-              <h3 className="text-lg text-gray-900 m-2"><strong>Effort Ranges</strong></h3>
-              {effortRanges.map((range) => (<li>
-                <input
-                  type="checkbox"
-                  id={range.id}
-                  value={range.label}
-                  onChange={() => handleEffortCheckbox(range.id)}
-                  checked={selectedEffort.includes(range.id)}
-                  className="ml-6 mr-2" />{range.label}</li>))}
+              <h3 className="text-lg text-gray-900 m-2"><strong>Academic Term</strong></h3>
+              <div className="border border-border rounded-lg max-h max-w-72 overflow-y-auto p-2 bg-card">
+                {Object.keys(academicTerm).map((num) =>
+                  <label key={num} className="flex item-center gap-2 p-1 hover:bg-muted rounded cursor-pointer">
+                    <input
+                      type="checkbox"
+                      value={academicTerm[num]}
+                      className="rounded border-gray-400"
+                    //onChange={() => handleTagCheckbox(tag)}
+                    //checked={selectedTags.includes(tag)}
+                    />
+                    <span className="text-sm">{academicTerm[num]}</span>
+                  </label>
+                )}
+              </div>
             </ul>
+            <div>
+            <div className="m-6">
+            <RangeFilter
+              title="Complexity"
+              minVal={minComplexity}
+              maxVal={maxComplexity}
+              setMin={setMinComplexity}
+              setMax={setMaxComplexity}
+            />
           </div>
+          <div className="m-6">
+            <RangeFilter
+              title="Cooperation"
+              minVal={minCooperation}
+              maxVal={maxCooperation}
+              setMin={setMinCooperation}
+              setMax={setMaxCooperation}
+            />
+          </div>
+          <div className="m-6">
+            <RangeFilter
+              title="Effort"
+              minVal={minEffort}
+              maxVal={maxEffort}
+              setMin={setMinEffort}
+              setMax={setMaxEffort}
+            />
+          </div>
+        </div>
+          </div>
+
+          
         )}
+        
       </div>
 
       {/* Reference for grid format:
       https://dev.to/musselmanth/the-dynamic-css-grid-configuration-ive-been-looking-for-1ogd*/}
       <div className="grid grid-cols-[repeat(auto-fill,minmax(320px,1fr))] gap-6">
-      {projs
+        {projs
           .filter((proj) => {
             return filterKeyword.toLowerCase() === ''
               ? proj
               : proj.title.toLowerCase().includes(filterKeyword.toLowerCase());
           })
           // Filtering Tech Tags
-          .filter((proj) => 
-          selectedTags.length === 0 ||
-          proj.tech_tags.some(tag => selectedTags.includes(tag)))
+          .filter((proj) =>
+            selectedTags.length === 0 ||
+            proj.tech_tags.some(tag => selectedTags.includes(tag)))
           // Filtering Complexity Ratings
-          .filter((proj) => 
-          selectedComplexity.length === 0 ||
-          complexityRanges.filter((range) => selectedComplexity.includes(range.id))
-          .some((range)=>proj.avg_complexity >= range.min && proj.avg_complexity <= range.max))
-          // Filtering Cooperation Ratings
-          .filter((proj) => 
-          selectedCooperation.length === 0 ||
-          cooperationRanges.filter((range) => selectedCooperation.includes(range.id))
-          .some((range)=>proj.avg_cooperation >= range.min && proj.avg_cooperation <= range.max))
+          .filter((proj) => {
+            // If both are empty, let everything pass
+            if (minComplexity === '' && maxComplexity === '') return true;
+
+            // Treat empty min as 0, empty max as 5
+            const min = minComplexity === '' ? 0 : parseFloat(minComplexity);
+            const max = maxComplexity === '' ? 5 : parseFloat(maxComplexity);
+
+            return proj.avg_complexity >= min && proj.avg_complexity <= max;
+          })
+          // // Filtering Cooperation Ratings
+          .filter((proj) => {
+            // If both are empty, let everything pass
+            if (minCooperation=== '' && maxCooperation === '') return true;
+
+            // Treat empty min as 0, empty max as 5
+            const min = minCooperation === '' ? 0 : parseFloat(minCooperation);
+            const max = maxCooperation === '' ? 5 : parseFloat(maxCooperation);
+
+            return proj.avg_cooperation >= min && proj.avg_cooperation <= max;
+          })
           // Filtering Effort Ratings
-          .filter((proj) => 
-          selectedEffort.length === 0 ||
-          effortRanges.filter((range) => selectedEffort.includes(range.id))
-          .some((range)=>proj.avg_effort >= range.min && proj.avg_effort <= range.max))
+          .filter((proj) => {
+            // If both are empty, let everything pass
+            if (minEffort === '' && maxEffort === '') return true;
+
+            // Treat empty min as 0, empty max as 5
+            const min = minEffort === '' ? 0 : parseFloat(minEffort);
+            const max = maxEffort === '' ? 5 : parseFloat(maxEffort);
+
+            return proj.avg_effort >= min && proj.avg_effort <= max;
+          })
           // Displays remaining project cards.
           .map((proj) => (
             <Card
@@ -303,7 +307,7 @@ function HomeView() {
               effort_rating={proj.avg_effort ?? 'N/A'}
               number_of_ratings={proj.review_count}
             />
-            ))}
+          ))}
       </div>
     </div>
   );
