@@ -1,13 +1,19 @@
 // References to help setup Supabase and React integration:
 // https://supabase.com/docs/guides/getting-started/quickstarts/reactjs
 // https://www.youtube.com/watch?v=tW1HO7i9EIM
+// Reference to help with filtering capability
+// https://www.tutorialspoint.com/how-to-use-checkboxes-in-reactjs#:~:text=In%20the%20handleChange()%20function%2C%20we%20check%20if%20the%20checkbox,target.
+// https://coreui.io/answers/how-to-filter-a-list-in-react/#:~:text=Implementing%20filtering%20functionality%20allows%20users,searchTerm.
+// https://www.youtube.com/watch?v=jN_s2uKntmc
 
-import { useEffect, useState } from 'react';
+
+import React, { useEffect, useState } from 'react';
 import { apiFetch } from '@/utils/apiFetch';
 import Card from './Card.jsx';
 import { Link } from 'react-router-dom'; // Use Link instead of <a> for speed!
-import { SlidersHorizontal } from "lucide-react";
+import { ChartNoAxesColumnDecreasing, SlidersHorizontal } from "lucide-react";
 import supabase from '@/supabase-client';
+import { select } from '@material-tailwind/react';
 
 const academicTerm = {
   1: "Winter",
@@ -16,39 +22,74 @@ const academicTerm = {
   4: "Fall",
 }
 
-const complexityRanges = {
-  1: '< 1.0',
-  2: '1.0 - 2.0',
-  3: '2.0 - 3.0',
-  4: '3.0 - 4.0',
-  5: '> 4.0',
-};
+const complexityRanges = [
+  {id: 1, label: '< 1.0', min: 0, max: 1},
+  {id: 2, label: '1.0 - 2.0', min: 1, max: 2},
+  {id: 3, label: '2.0 - 3.0', min: 2, max: 3},
+  {id: 4, label: '3.0 - 4.0', min: 3, max: 4},
+  {id: 5, label: '> 4.0', min: 4, max: 5}
+];
 
-const cooperationRanges = {
-  1: '< 1.0',
-  2: '1.0 - 2.0',
-  3: '2.0 - 3.0',
-  4: '3.0 - 4.0',
-  5: '> 4.0',
-};
+const cooperationRanges = [
+  {id: 1, label: '< 1.0', min: 0, max: 1},
+  {id: 2, label: '1.0 - 2.0', min: 1, max: 2},
+  {id: 3, label: '2.0 - 3.0', min: 2, max: 3},
+  {id: 4, label: '3.0 - 4.0', min: 3, max: 4},
+  {id: 5, label: '> 4.0', min: 4, max: 5}
+];
 
-const effortRanges = {
-  1: '< 1.0',
-  2: '1.0 - 2.0',
-  3: '2.0 - 3.0',
-  4: '3.0 - 4.0',
-  5: '> 4.0',
-};
+const effortRanges = [
+  {id: 1, label: '< 1.0', min: 0, max: 1},
+  {id: 2, label: '1.0 - 2.0', min: 1, max: 2},
+  {id: 3, label: '2.0 - 3.0', min: 2, max: 3},
+  {id: 4, label: '3.0 - 4.0', min: 3, max: 4},
+  {id: 5, label: '> 4.0', min: 4, max: 5}
+];
 
 function HomeView() {
   const [projs, setProjs] = useState([]);
+  const [reviews, setReviews] = useState([]);
   const [tags, setTags] = useState([]);
+  const [removeTags, setRemoveTagss] = useState([]);
   const [academicYears, setAcademicYears] = useState([]);
   const [filterKeyword, setFilterKeyword] = useState('');
   const [openFilter, setOpenFilter] = useState(false);
+  const [selectedComplexity, setSelectedComplexity] = useState([]);
+  const [selectedCooperation, setSelectedCooperation] = useState([]);
+  const [selectedEffort, setSelectedEffort] = useState([]);
 
   const toggleDropdown = () => {
     setOpenFilter(!openFilter);
+  };
+
+  // const handleTagCheckBox = (tag) => {
+  //   const {value, checked} = e.target;
+  //   if (checked) {
+  //     setSelectedTags([...selectedTags, value]);
+  //   } else {
+  //     setSelectedTags(selectedTags.filter((tag) => tag !== value));
+  //   }
+  // };
+
+  const handleComplexityCheckbox = (rangeID) => {    
+    setSelectedComplexity((prev) => 
+      prev.includes(rangeID)
+      ? prev.filter((id) => id !== rangeID)
+      : [...prev,rangeID]);
+  };
+
+  const handleCooperationCheckbox = (rangeID) => {    
+    setSelectedCooperation((prev) => 
+      prev.includes(rangeID)
+      ? prev.filter((id) => id !== rangeID)
+      : [...prev,rangeID]);
+  };
+
+  const handleEffortCheckbox = (rangeID) => {    
+    setSelectedEffort((prev) => 
+      prev.includes(rangeID)
+      ? prev.filter((id) => id !== rangeID)
+      : [...prev,rangeID]);
   };
 
   useEffect(() => {
@@ -91,10 +132,12 @@ function HomeView() {
         setAcademicYears(uniqueTermArray || []);
       }
     }
+
     getProjects()
     getTags();
     getAcademicYears();
   }, []); // Empty dependency array means this runs once on mount
+
 
   return (
     <div className="p-4">
@@ -134,10 +177,11 @@ function HomeView() {
               {tags.map((tag) => <li>
                 <input
                   type="checkbox"
+                  value={tag}
                   className="ml-10"
-                /> {tag}</li>)}
+                />{tag}</li>)}
             </ul>
-            <ul>
+            {/* <ul>
               <input
                 type="checkbox"
                 className="text-sm text-gray-700 m-2"
@@ -158,18 +202,37 @@ function HomeView() {
                   key="num"
                   value={academicTerm[num]}
                   className="ml-10" /> {academicTerm[num]}</li>))}
-            </ul>
+            </ul> */}
             <ul><input type="checkbox" className="text-sm text-gray-700 m-2" />
               Complexity Ranges
-              {Object.keys(complexityRanges).map((num) => (<li><input type="checkbox" key="num" value="num" className="ml-10" /> {complexityRanges[num]}</li>))}
-            </ul>
+              {complexityRanges.map((range) => (<li>
+                <input 
+                type="checkbox"
+                id={range.id}
+                value={range.label}
+                onChange={() => handleComplexityCheckbox(range.id)}
+                checked={selectedComplexity.includes(range.id)}
+                className="ml-10" />{range.label}</li>))}            </ul>
             <ul><input type="checkbox" className="text-sm text-gray-700 m-2" />
               Cooperation Ranges
-              {Object.keys(cooperationRanges).map((num) => (<li><input type="checkbox" key="num" value="num" className="ml-10" /> {cooperationRanges[num]}</li>))}
-            </ul>
+              {cooperationRanges.map((range) => (<li>
+                <input 
+                type="checkbox"
+                id={range.id}
+                value={range.label}
+                onChange={() => handleCooperationCheckbox(range.id)}
+                checked={selectedCooperation.includes(range.id)}
+                className="ml-10" />{range.label}</li>))}            </ul>
             <ul><input type="checkbox" className="text-sm text-gray-700 m-2" />
               Effort Ranges
-              {Object.keys(effortRanges).map((num) => (<li><input type="checkbox" key="num" value="num" className="ml-10" /> {effortRanges[num]}</li>))}
+              {effortRanges.map((range) => (<li>
+                <input 
+                type="checkbox"
+                id={range.id}
+                value={range.label}
+                onChange={() => handleEffortCheckbox(range.id)}
+                checked={selectedEffort.includes(range.id)}
+                className="ml-10" />{range.label}</li>))}
             </ul>
           </div>
         )}
@@ -187,6 +250,22 @@ function HomeView() {
               ? proj
               : proj.title.toLowerCase().includes(filterKeyword.toLowerCase());
           })
+          // Filtering Complexity Ratings
+          .filter((proj) => 
+          selectedComplexity.length === 0 ||
+          complexityRanges.filter((range) => selectedComplexity.includes(range.id))
+          .some((range)=>proj.avg_complexity >= range.min && proj.avg_complexity <= range.max))
+          // Filtering Cooperation Ratings
+          .filter((proj) => 
+          selectedCooperation.length === 0 ||
+          cooperationRanges.filter((range) => selectedCooperation.includes(range.id))
+          .some((range)=>proj.avg_cooperation >= range.min && proj.avg_cooperation <= range.max))
+          // Filtering Effort Ratings
+          .filter((proj) => 
+          selectedEffort.length === 0 ||
+          effortRanges.filter((range) => selectedEffort.includes(range.id))
+          .some((range)=>proj.avg_effort >= range.min && proj.avg_effort <= range.max))
+          // TO DO: Filter based on checkboxes
           .map((proj) => (
             <Card
               key={proj.id}
