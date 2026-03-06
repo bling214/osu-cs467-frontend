@@ -44,9 +44,9 @@ export default function RangeFilter({ title, minVal, maxVal, setMin, setMax }) {
 
   return (
     <div className="flex flex-col gap-1 mb-4">
-      <label className="text-lg font-semibold text-foreground">
-        {title} <span className="text-xs font-normal text-muted-fg">(0 - 5)</span>
-      </label>
+      <h3 className="text-lg font-semibold text-foreground">
+        {title} (0 - 5)
+      </h3>
       <div className="flex items-center gap-2">
         <input
           type="number"

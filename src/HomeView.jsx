@@ -16,32 +16,8 @@ import { Search, PenLine, SlidersHorizontal, X, Dice1 } from 'lucide-react';
 import supabase from '@/supabase-client';
 import RangeFilter from './MinMaxRating.jsx';
 
-const academicTerm = {
-  1: "Winter",
-  2: "Spring",
-  3: "Summer",
-  4: "Fall",
-}
-
-const complexityRanges = [
-  { id: 1, label: '< 1.0', min: 0, max: 1 },
-  { id: 2, label: '1.0 - 2.0', min: 1, max: 2 },
-  { id: 3, label: '2.0 - 3.0', min: 2, max: 3 },
-  { id: 4, label: '3.0 - 4.0', min: 3, max: 4 },
-  { id: 5, label: '> 4.0', min: 4, max: 5 }
-];
-
-const cooperationRanges = [
-  { id: 1, label: '< 1.0', min: 0, max: 1 },
-  { id: 2, label: '1.0 - 2.0', min: 1, max: 2 },
-  { id: 3, label: '2.0 - 3.0', min: 2, max: 3 },
-  { id: 4, label: '3.0 - 4.0', min: 3, max: 4 },
-  { id: 5, label: '> 4.0', min: 4, max: 5 }
-];
-
 function HomeView() {
   const [projs, setProjs] = useState([]);
-  const [reviews, setReviews] = useState([]);
   const [filterKeyword, setFilterKeyword] = useState('');
   const [tags, setTags] = useState([]);
   const [openFilter, setOpenFilter] = useState(false);
@@ -113,7 +89,6 @@ function HomeView() {
         setTags(uniqueArray || []);
       }
     }
-
     getProjects()
     getTags();
   }, []); // Empty dependency array means this runs once on mount
@@ -122,7 +97,7 @@ function HomeView() {
     <div>
       {/* Reference for search filter:
           https://www.youtube.com/watch?v=xAqCEBFGdYk */}
-      <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 mb-6 max-w-2xl mx-auto px-4">
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 mb-4 max-w-2xl mx-auto px-4">
         <div className="relative flex-1">
           <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-fg" />
           <input
@@ -142,7 +117,7 @@ function HomeView() {
         </Link>
       </div>
       <div>
-        <div className="flex gap-2 items-center justify-center mb-6">
+        <div className="flex gap-2 items-center justify-center mb-2">
           <button
             className="inline-flex items-center justify-center gap-2 bg-primary text-primary-fg px-6 py-3 rounded-lg hover:opacity-90 transition-opacity font-medium whitespace-nowrap w-full sm:w-auto"
             onClick={toggleDropdown}>
@@ -157,7 +132,7 @@ function HomeView() {
           </button>
         </div>
         {openFilter && (
-          <div className="flex gap-4 items-center justify-center mt-2 w-fit rounded-md shadow-lg focus:outline-none border border-gray-600 bg-gray-400 text-justify">
+          <div className="flex gap-4 bg-secondary relative absolute z-50 items-center justify-center w-fit rounded-md shadow-lg focus:outline-none border border-gray-600 bg-gray-400">
             <ul>
               <h3 className="text-lg text-gray-900 m-2 ml-6"><strong>Tech Stack</strong></h3>
               <div className="border border-border rounded-lg max-h-48 max-w-72 overlfow-y-auto overflow-scroll p-2 ml-6 bg-card">
@@ -175,76 +150,38 @@ function HomeView() {
                 )}
               </div>
             </ul>
-            <div className="flex items-start mt-2 w-auto rounded-md shadow-lg focus:outline-none border border-gray-600 bg-gray-400 text-justify"></div>
-            <ul>
-              <h3 className="text-lg text-gray-900 m-2"><strong>Academic Years</strong></h3>
-              <div className="border border-border rounded-lg max-h-48 max-w-72 overflow-y-auto overflow-scroll p-2 bg-card">
-                {academicYears.map((academicYear) =>
-                  <label key={academicYear} className="flex item-center gap-2 p-1 hover:bg-muted rounded cursor-pointer">
-                    <input
-                      type="checkbox"
-                      value={academicYear}
-                      className="rounded border-gray-400"
-                    //onChange={() => handleTagCheckbox(tag)}
-                    //checked={selectedTags.includes(tag)}
-                    />
-                    <span className="text-sm">{academicYear}</span>
-                  </label>
-                )}
-              </div>
-            </ul>
-            <div className="flex items-start mt-2 w-auto rounded-md shadow-lg focus:outline-none border border-gray-600 bg-gray-400 text-justify"></div>
-            <ul>
-              <h3 className="text-lg text-gray-900 m-2"><strong>Academic Term</strong></h3>
-              <div className="border border-border rounded-lg max-h max-w-72 overflow-y-auto p-2 bg-card">
-                {Object.keys(academicTerm).map((num) =>
-                  <label key={num} className="flex item-center gap-2 p-1 hover:bg-muted rounded cursor-pointer">
-                    <input
-                      type="checkbox"
-                      value={academicTerm[num]}
-                      className="rounded border-gray-400"
-                    //onChange={() => handleTagCheckbox(tag)}
-                    //checked={selectedTags.includes(tag)}
-                    />
-                    <span className="text-sm">{academicTerm[num]}</span>
-                  </label>
-                )}
-              </div>
-            </ul>
             <div>
-            <div className="m-6">
-            <RangeFilter
-              title="Complexity"
-              minVal={minComplexity}
-              maxVal={maxComplexity}
-              setMin={setMinComplexity}
-              setMax={setMaxComplexity}
-            />
+              <div className="m-6">
+                <RangeFilter
+                  title="Complexity"
+                  minVal={minComplexity}
+                  maxVal={maxComplexity}
+                  setMin={setMinComplexity}
+                  setMax={setMaxComplexity}
+                />
+              </div>
+              <div className="m-6">
+                <RangeFilter
+                  title="Cooperation"
+                  minVal={minCooperation}
+                  maxVal={maxCooperation}
+                  setMin={setMinCooperation}
+                  setMax={setMaxCooperation}
+                />
+              </div>
+              <div className="m-6">
+                <RangeFilter
+                  title="Effort"
+                  minVal={minEffort}
+                  maxVal={maxEffort}
+                  setMin={setMinEffort}
+                  setMax={setMaxEffort}
+                />
+              </div>
+            </div>
           </div>
-          <div className="m-6">
-            <RangeFilter
-              title="Cooperation"
-              minVal={minCooperation}
-              maxVal={maxCooperation}
-              setMin={setMinCooperation}
-              setMax={setMaxCooperation}
-            />
-          </div>
-          <div className="m-6">
-            <RangeFilter
-              title="Effort"
-              minVal={minEffort}
-              maxVal={maxEffort}
-              setMin={setMinEffort}
-              setMax={setMaxEffort}
-            />
-          </div>
-        </div>
-          </div>
-
-          
         )}
-        
+
       </div>
 
       {/* Reference for grid format:
@@ -274,7 +211,7 @@ function HomeView() {
           // // Filtering Cooperation Ratings
           .filter((proj) => {
             // If both are empty, let everything pass
-            if (minCooperation=== '' && maxCooperation === '') return true;
+            if (minCooperation === '' && maxCooperation === '') return true;
 
             // Treat empty min as 0, empty max as 5
             const min = minCooperation === '' ? 0 : parseFloat(minCooperation);
