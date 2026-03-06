@@ -5,13 +5,15 @@
 // https://www.tutorialspoint.com/how-to-use-checkboxes-in-reactjs#:~:text=In%20the%20handleChange()%20function%2C%20we%20check%20if%20the%20checkbox,target.
 // https://coreui.io/answers/how-to-filter-a-list-in-react/#:~:text=Implementing%20filtering%20functionality%20allows%20users,searchTerm.
 // https://www.youtube.com/watch?v=jN_s2uKntmc
+// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/filter#:~:text=The%20filter()%20method%20is,included%20in%20the%20new%20array.
+// https://www.geeksforgeeks.org/javascript/how-to-filter-an-array-from-all-elements-of-another-array-in-javascript/
 
 
 import React, { useEffect, useState } from 'react';
 import { apiFetch } from '@/utils/apiFetch';
 import Card from './Card.jsx';
 import { Link } from 'react-router-dom'; // Use Link instead of <a> for speed!
-import { ChartNoAxesColumnDecreasing, SlidersHorizontal } from "lucide-react";
+import { ChartNoAxesColumnDecreasing, SlidersHorizontal, X } from "lucide-react";
 import supabase from '@/supabase-client';
 import { select } from '@material-tailwind/react';
 
@@ -48,29 +50,40 @@ const effortRanges = [
 
 function HomeView() {
   const [projs, setProjs] = useState([]);
+  const [academicYears, setAcademicYears] = useState([]);
   const [reviews, setReviews] = useState([]);
   const [tags, setTags] = useState([]);
-  const [removeTags, setRemoveTagss] = useState([]);
-  const [academicYears, setAcademicYears] = useState([]);
   const [filterKeyword, setFilterKeyword] = useState('');
   const [openFilter, setOpenFilter] = useState(false);
+  const [selectedTags, setSelectedTags] = useState([]);
   const [selectedComplexity, setSelectedComplexity] = useState([]);
   const [selectedCooperation, setSelectedCooperation] = useState([]);
   const [selectedEffort, setSelectedEffort] = useState([]);
 
+  // Opens and closes more filter menu
   const toggleDropdown = () => {
     setOpenFilter(!openFilter);
   };
 
-  // const handleTagCheckBox = (tag) => {
-  //   const {value, checked} = e.target;
-  //   if (checked) {
-  //     setSelectedTags([...selectedTags, value]);
-  //   } else {
-  //     setSelectedTags(selectedTags.filter((tag) => tag !== value));
-  //   }
-  // };
+  // Clears all filter
+  const clearFilter = () => {
+    setOpenFilter(false);
+    setSelectedTags([]);
+    setSelectedComplexity([]);
+    setSelectedCooperation([]);
+    setSelectedEffort([]);
+    setFilterKeyword('');
+  }
 
+  // Event handler for Tech Tags
+  const handleTagCheckbox = (tag) => {    
+    setSelectedTags((prev) => 
+      prev.includes(tag)
+      ? prev.filter((item) => item !== tag)
+      : [...prev,tag]);
+  };
+
+  // Event handler for Complexity Ratings
   const handleComplexityCheckbox = (rangeID) => {    
     setSelectedComplexity((prev) => 
       prev.includes(rangeID)
@@ -78,6 +91,7 @@ function HomeView() {
       : [...prev,rangeID]);
   };
 
+  // Event handler for Cooperation Ratings
   const handleCooperationCheckbox = (rangeID) => {    
     setSelectedCooperation((prev) => 
       prev.includes(rangeID)
@@ -85,6 +99,7 @@ function HomeView() {
       : [...prev,rangeID]);
   };
 
+  // Event handler for Effort Ratings
   const handleEffortCheckbox = (rangeID) => {    
     setSelectedEffort((prev) => 
       prev.includes(rangeID)
@@ -93,6 +108,7 @@ function HomeView() {
   };
 
   useEffect(() => {
+    // Fetching 'projects' and 'reviews' data from backend API.
     async function getProjects() {
       try {
         const projData = await apiFetch('/projects/');
@@ -102,6 +118,7 @@ function HomeView() {
       }
     }
 
+    // Gathering a list of all possible and selectable tech tags based on the project information.
     const getTags = async () => {
       const { data, error } = await supabase.from('projects').select("tech_tags");
       if (error) {
@@ -118,6 +135,7 @@ function HomeView() {
       }
     }
 
+    // Gathering a list of all possible and selectable academic years based on review data.
     const getAcademicYears = async () => {
       const { data, error } = await supabase.from('reviews').select('academic_year');
       if (error) {
@@ -157,8 +175,9 @@ function HomeView() {
           placeholder="Search by Project Name or Keyword..."
         />
       </div>
-      {/* More Filters Bar Section*/}
+      {/* More Filters Bar Section: List all possible options for each parameter. */}
       <div>
+        <div className="flex gap-2">
         <button
           className="icon-button flex justify-end items-center border border-gray-400 p-1 rounded-lg bg-gray-700 text-white"
           onClick={toggleDropdown}>
@@ -167,18 +186,26 @@ function HomeView() {
             More Filters
           </span>
         </button>
+        <button
+          className="icon-button flex justify-end items-center border border-gray-400 p-1 rounded-lg bg-gray-600 text-white"
+          onClick={clearFilter}>
+          <X className="icon" />
+          <span className="p-2">
+            Clear Filters
+          </span>
+        </button>
+        </div>
         {openFilter && (
           <div className="flex absolute items-start mt-2 w-auto rounded-md shadow-lg focus:outline-none border border-gray-600 bg-gray-400 text-justify">
             <ul>
-              <input
-                type="checkbox"
-                className="text-sm text-gray-700 m-2" />
-              Tech Stack
+              <h3 className="text-lg text-gray-900 m-2"><strong>Tech Stack</strong></h3>
               {tags.map((tag) => <li>
                 <input
                   type="checkbox"
                   value={tag}
-                  className="ml-10"
+                  onChange={() => handleTagCheckbox(tag)}
+                  checked={selectedTags.includes(tag)}
+                  className="ml-6 mr-2"
                 />{tag}</li>)}
             </ul>
             {/* <ul>
@@ -201,10 +228,10 @@ function HomeView() {
                   type="checkbox"
                   key="num"
                   value={academicTerm[num]}
-                  className="ml-10" /> {academicTerm[num]}</li>))}
+                  className="ml-6" /> {academicTerm[num]}</li>))}
             </ul> */}
-            <ul><input type="checkbox" className="text-sm text-gray-700 m-2" />
-              Complexity Ranges
+            <ul>
+              <h3 className="text-lg text-gray-900 m-2"><strong>Complexity Ranges</strong></h3>
               {complexityRanges.map((range) => (<li>
                 <input 
                 type="checkbox"
@@ -212,9 +239,8 @@ function HomeView() {
                 value={range.label}
                 onChange={() => handleComplexityCheckbox(range.id)}
                 checked={selectedComplexity.includes(range.id)}
-                className="ml-10" />{range.label}</li>))}            </ul>
-            <ul><input type="checkbox" className="text-sm text-gray-700 m-2" />
-              Cooperation Ranges
+                className="ml-6 mr-2" />{range.label}</li>))}            </ul>
+            <ul><h3 className="text-lg text-gray-900 m-2"><strong>Cooperation Ranges</strong></h3>
               {cooperationRanges.map((range) => (<li>
                 <input 
                 type="checkbox"
@@ -222,9 +248,9 @@ function HomeView() {
                 value={range.label}
                 onChange={() => handleCooperationCheckbox(range.id)}
                 checked={selectedCooperation.includes(range.id)}
-                className="ml-10" />{range.label}</li>))}            </ul>
-            <ul><input type="checkbox" className="text-sm text-gray-700 m-2" />
-              Effort Ranges
+                className="ml-6 mr-2" />{range.label}</li>))}            </ul>
+            <ul>
+              <h3 className="text-lg text-gray-900 m-2"><strong>Effort Ranges</strong></h3>
               {effortRanges.map((range) => (<li>
                 <input 
                 type="checkbox"
@@ -232,11 +258,11 @@ function HomeView() {
                 value={range.label}
                 onChange={() => handleEffortCheckbox(range.id)}
                 checked={selectedEffort.includes(range.id)}
-                className="ml-10" />{range.label}</li>))}
+                className="ml-6 mr-2" />{range.label}</li>))}
             </ul>
           </div>
         )}
-
+        
 
       </div>
 
@@ -250,6 +276,10 @@ function HomeView() {
               ? proj
               : proj.title.toLowerCase().includes(filterKeyword.toLowerCase());
           })
+          // Filtering Tech Tags
+          .filter((proj) => 
+          selectedTags.length === 0 ||
+          proj.tech_tags.some(tag => selectedTags.includes(tag)))
           // Filtering Complexity Ratings
           .filter((proj) => 
           selectedComplexity.length === 0 ||
@@ -265,7 +295,7 @@ function HomeView() {
           selectedEffort.length === 0 ||
           effortRanges.filter((range) => selectedEffort.includes(range.id))
           .some((range)=>proj.avg_effort >= range.min && proj.avg_effort <= range.max))
-          // TO DO: Filter based on checkboxes
+          // Displays remaining project cards.
           .map((proj) => (
             <Card
               key={proj.id}
