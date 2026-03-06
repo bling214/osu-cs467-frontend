@@ -26,11 +26,22 @@ function ReviewPage() {
   const [descClamped, setDescClamped] = useState(false);
   const descRef = useRef(null);
 
+  // Reset description expansion/clamp state when switching projects
   useEffect(() => {
-    if (descRef.current) {
-      setDescClamped(descRef.current.scrollHeight > descRef.current.clientHeight);
+    if (project?.id) {
+      setDescExpanded(false);
+      setDescClamped(false);
     }
-  }, [project]);
+  }, [project?.id]);
+
+  // Measure whether the description is clamped while it is in its clamped state
+  useEffect(() => {
+    if (descRef.current && !descExpanded) {
+      setDescClamped(
+        descRef.current.scrollHeight > descRef.current.clientHeight
+      );
+    }
+  }, [project, descExpanded]);
 
   useEffect(() => {
     async function fetchData() {
