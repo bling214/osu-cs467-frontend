@@ -5,8 +5,9 @@ Project Experience Explorer Frontend - OSU CS467 Capstone
 # Prerequisites
 
 - Visual Studio
+- Node.js version 22+ (more information below)
 
-This React App uses Vite which will require a Node.js version 22+.  Below is the URL of instructions on how to update your Node to a later version if using Homebrew does not work.
+Below is the URL of instructions on how to update your Node to a later version if using Homebrew does not work.
 https://www.geeksforgeeks.org/node-js/update-node-js-and-npm-to-latest-version/
 
 # How to run the React App
