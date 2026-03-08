@@ -28,11 +28,12 @@ function HomeView() {
   const [minEffort, setMinEffort] = useState('');
   const [maxEffort, setMaxEffort] = useState('');
   const filterRef = useRef(null);
+  const buttonRef = useRef(null);
 
   // Close filter dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (e) => {
-      if (openFilter && filterRef.current && !filterRef.current.contains(e.target)) {
+      if (openFilter && filterRef.current && !filterRef.current.contains(e.target) && !buttonRef.current.contains(e.target)) {
         setOpenFilter(false);
       }
     };
@@ -106,7 +107,8 @@ function HomeView() {
           </div>
           <button
             className={`inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg font-medium whitespace-nowrap transition-colors text-sm ${openFilter ? 'bg-primary text-primary-fg' : 'bg-card text-foreground border border-border hover:bg-muted'}`}
-            onClick={toggleDropdown}>
+            onClick={toggleDropdown}
+            ref={buttonRef}>
             <SlidersHorizontal size={16} />
             More Filters
           </button>
