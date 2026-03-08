@@ -12,7 +12,7 @@ import { useEffect, useRef, useState } from 'react';
 import { apiFetch } from '@/utils/apiFetch';
 import Card from './Card.jsx';
 import { Link } from 'react-router-dom'; // Use Link instead of <a> for speed!
-import { Search, PenLine, SlidersHorizontal, X, Dice1 } from 'lucide-react';
+import { Search, PenLine, SlidersHorizontal, X } from 'lucide-react';
 import supabase from '@/supabase-client';
 import RangeFilter from './MinMaxRating.jsx';
 
@@ -141,7 +141,7 @@ function HomeView() {
       </div>
 
       {/* Filter dropdown overlay */}
-      <div className="relative px-4 mb-4" ref={filterRef}>
+      <div className="relative px-4 mb-4" ref={{filterRef} || {toggleDropdown}}>
         {openFilter && (
           <div className="absolute left-1/2 -translate-x-1/2 z-50 bg-card border border-border rounded-xl shadow-xl p-6 w-fit max-w-[calc(100vw-2rem)]">
             <div className="flex flex-col md:flex-row gap-6">
