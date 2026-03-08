@@ -41,19 +41,12 @@ function HomeView() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [openFilter]);
 
-  const currentYear = new Date().getFullYear();
-  const academicYears = Array.from(
-    { length: currentYear - 2000 + 1 },
-    (_, i) => currentYear - i
-  );
-
   // Opens and closes more filter menu
   const toggleDropdown = () => {
     setOpenFilter(!openFilter);
   };
 
   // Clears all filter
-  // TO DO: Add Academic Year and Term
   const clearFilter = () => {
     setOpenFilter(false);
     setSelectedTags([]);
