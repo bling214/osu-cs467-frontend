@@ -8,7 +8,7 @@
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/filter#:~:text=The%20filter()%20method%20is,included%20in%20the%20new%20array.
 // https://www.geeksforgeeks.org/javascript/how-to-filter-an-array-from-all-elements-of-another-array-in-javascript/
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { apiFetch } from '@/utils/apiFetch';
 import Card from './Card.jsx';
 import { Link } from 'react-router-dom'; // Use Link instead of <a> for speed!
@@ -28,6 +28,18 @@ function HomeView() {
   const [maxCooperation, setMaxCooperation] = useState('');
   const [minEffort, setMinEffort] = useState('');
   const [maxEffort, setMaxEffort] = useState('');
+  const filterRef = useRef(null);
+
+  // Close filter dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (openFilter && filterRef.current && !filterRef.current.contains(e.target)) {
+        setOpenFilter(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [openFilter]);
 
   const currentYear = new Date().getFullYear();
   const academicYears = Array.from(
@@ -97,61 +109,71 @@ function HomeView() {
     <div>
       {/* Reference for search filter:
           https://www.youtube.com/watch?v=xAqCEBFGdYk */}
-      <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 mb-4 max-w-2xl mx-auto px-4">
-        <div className="relative flex-1">
-          <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-fg" />
-          <input
-            className="w-full pl-10 pr-4 py-3 border border-border rounded-lg bg-card text-foreground focus:outline-none focus:ring-2 focus:ring-primary/40"
-            type="text"
-            value={filterKeyword}
-            onChange={(e) => setFilterKeyword(e.target.value)}
-            placeholder="Search by project name or keyword..."
-          />
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 mb-4 px-4">
+        {/* Left side: Search + filter buttons */}
+        <div className="flex flex-1 flex-col sm:flex-row items-stretch sm:items-center gap-3">
+          <div className="relative flex-1 max-w-md">
+            <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-fg" />
+            <input
+              className="w-full pl-10 pr-4 py-2.5 border border-border rounded-lg bg-card text-foreground focus:outline-none focus:ring-2 focus:ring-primary/40"
+              type="text"
+              value={filterKeyword}
+              onChange={(e) => setFilterKeyword(e.target.value)}
+              placeholder="Search by project name or keyword..."
+            />
+          </div>
+          <button
+            className={`inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg font-medium whitespace-nowrap transition-colors text-sm ${openFilter ? 'bg-primary text-primary-fg' : 'bg-card text-foreground border border-border hover:bg-muted'}`}
+            onClick={toggleDropdown}>
+            <SlidersHorizontal size={16} />
+            More Filters
+          </button>
+          {(selectedTags.length > 0 || filterKeyword || minComplexity || maxComplexity || minCooperation || maxCooperation || minEffort || maxEffort) && (
+            <button
+              className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg font-medium whitespace-nowrap transition-colors text-sm text-muted-fg hover:text-foreground hover:bg-muted border border-border bg-card"
+              onClick={clearFilter}>
+              <X size={16} />
+              Clear Filters
+            </button>
+          )}
         </div>
+        {/* Right side: Submit a Review */}
         <Link
           to="/form"
-          className="inline-flex items-center justify-center gap-2 bg-primary text-primary-fg px-6 py-3 rounded-lg hover:opacity-90 transition-opacity font-medium whitespace-nowrap w-full sm:w-auto"
+          className="inline-flex items-center justify-center gap-2 bg-primary text-primary-fg px-6 py-2.5 rounded-lg hover:opacity-90 transition-opacity font-medium whitespace-nowrap w-full sm:w-auto"
         >
           <PenLine size={16} />
           Submit a Review
         </Link>
       </div>
-      <div>
-        <div className="flex gap-2 items-center justify-center mb-2">
-          <button
-            className="inline-flex items-center justify-center gap-2 bg-primary text-primary-fg px-6 py-3 rounded-lg hover:opacity-90 transition-opacity font-medium whitespace-nowrap w-full sm:w-auto"
-            onClick={toggleDropdown}>
-            <SlidersHorizontal size={20} />
-            More Filters
-          </button>
-          <button
-            className="inline-flex items-center justify-center gap-2 bg-primary text-primary-fg px-6 py-3 rounded-lg hover:opacity-90 transition-opacity font-medium whitespace-nowrap w-full sm:w-auto"
-            onClick={clearFilter}>
-            <X size={20} />
-            Clear Filters
-          </button>
-        </div>
+
+      {/* Filter dropdown overlay */}
+      <div className="relative px-4 mb-4" ref={filterRef}>
         {openFilter && (
-          <div className="flex gap-4 bg-secondary relative absolute z-50 items-center justify-center w-fit rounded-md shadow-lg focus:outline-none border border-gray-600 bg-gray-400">
-            <ul>
-              <h3 className="text-lg text-gray-900 m-2 ml-6"><strong>Tech Stack</strong></h3>
-              <div className="border border-border rounded-lg max-h-48 max-w-72 overlfow-y-auto overflow-scroll p-2 ml-6 bg-card">
-                {tags.map((tag) =>
-                  <label key={tag} className="flex item-center gap-2 p-1 hover:bg-muted rounded cursor-pointer">
-                    <input
-                      type="checkbox"
-                      value={tag}
-                      className="rounded border-gray-400"
-                      onChange={() => handleTagCheckbox(tag)}
-                      checked={selectedTags.includes(tag)}
-                    />
-                    <span className="text-sm">{tag}</span>
-                  </label>
-                )}
+          <div className="absolute left-1/2 -translate-x-1/2 z-50 bg-card border border-border rounded-xl shadow-xl p-6 w-fit max-w-[calc(100vw-2rem)]">
+            <div className="flex flex-col md:flex-row gap-6">
+              {/* Tech Stack */}
+              <div className="min-w-0">
+                <h3 className="text-sm font-semibold text-foreground uppercase tracking-wide mb-0">Keywords</h3>
+                <span className="text-xs text-muted-fg mb-2 block">(select all that apply)</span>
+                <div className="border border-border rounded-lg max-h-52 overflow-y-auto p-2 bg-muted/30 w-56">
+                  {tags.map((tag) =>
+                    <label key={tag} className="flex items-center gap-2 px-2 py-1.5 hover:bg-muted rounded-md cursor-pointer transition-colors">
+                      <input
+                        type="checkbox"
+                        value={tag}
+                        className="rounded border-border accent-primary"
+                        onChange={() => handleTagCheckbox(tag)}
+                        checked={selectedTags.includes(tag)}
+                      />
+                      <span className="text-sm text-foreground">{tag}</span>
+                    </label>
+                  )}
+                </div>
               </div>
-            </ul>
-            <div>
-              <div className="m-6">
+              {/* Rating Filters */}
+              <div className="flex flex-col gap-2 min-w-0">
+                <h3 className="text-sm font-semibold text-foreground uppercase tracking-wide mb-1">Rating Ranges</h3>
                 <RangeFilter
                   title="Complexity"
                   minVal={minComplexity}
@@ -159,8 +181,6 @@ function HomeView() {
                   setMin={setMinComplexity}
                   setMax={setMaxComplexity}
                 />
-              </div>
-              <div className="m-6">
                 <RangeFilter
                   title="Cooperation"
                   minVal={minCooperation}
@@ -168,8 +188,6 @@ function HomeView() {
                   setMin={setMinCooperation}
                   setMax={setMaxCooperation}
                 />
-              </div>
-              <div className="m-6">
                 <RangeFilter
                   title="Effort"
                   minVal={minEffort}
@@ -181,7 +199,6 @@ function HomeView() {
             </div>
           </div>
         )}
-
       </div>
 
       {/* Reference for grid format:
