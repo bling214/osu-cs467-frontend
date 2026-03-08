@@ -13,7 +13,6 @@ import { apiFetch } from '@/utils/apiFetch';
 import Card from './Card.jsx';
 import { Link } from 'react-router-dom'; // Use Link instead of <a> for speed!
 import { Search, PenLine, SlidersHorizontal, X } from 'lucide-react';
-import supabase from '@/supabase-client';
 import RangeFilter from './MinMaxRating.jsx';
 
 function HomeView() {
@@ -73,29 +72,19 @@ function HomeView() {
       try {
         const projData = await apiFetch('/projects/');
         setProjs(projData || []);
-      } catch (error) {
-        console.error('Error fetching project data from backend:', error);
-      }
-    }
-
-    // Gathering a list of all possible and selectable tech tags based on the project information.
-    const getTags = async () => {
-      const { data, error } = await supabase.from('projects').select("tech_tags");
-      if (error) {
-        console.log('Error: ', error);
-      } else {
-        const techTagList = data.flatMap(row => row.tech_tags);
-        {/* Reference for creating a unique list and sorting a list without case sensitivity
+        const techTagList = projData.flatMap(row => row.tech_tags);
+        /* Reference for creating a unique list and sorting a list without case sensitivity
           https://dmitripavlutin.com/javascript-merge-arrays/#:~:text=%2C%20'Superman'%5D;-,const%20villains%20=%20%5B'Joker'%2C%20'Bane'%5D;,//%20merge%20array2%20into%20array1
-          https://coreui.io/blog/how-to-sort-an-array-of-objects-by-string-property-value-in-javascript/#:~:text=appear%20after%20b%20.-,Case%2DInsensitive%20Sorting,name))*/}
+          https://coreui.io/blog/how-to-sort-an-array-of-objects-by-string-property-value-in-javascript/#:~:text=appear%20after%20b%20.-,Case%2DInsensitive%20Sorting,name))*/
         const uniqueArray = [...new Set(techTagList)].sort((a, b) => {
           return a.localeCompare(b, undefined, { sensitivity: 'base' })
         });
         setTags(uniqueArray || []);
+      } catch (error) {
+        console.error('Error fetching project data from backend:', error);
       }
     }
     getProjects()
-    getTags();
   }, []); // Empty dependency array means this runs once on mount
 
   return (
@@ -141,7 +130,7 @@ function HomeView() {
       </div>
 
       {/* Filter dropdown overlay */}
-      <div className="relative px-4 mb-4" ref={{filterRef} || {toggleDropdown}}>
+      <div className="relative px-4 mb-4" ref={filterRef}>
         {openFilter && (
           <div className="absolute left-1/2 -translate-x-1/2 z-50 bg-card border border-border rounded-xl shadow-xl p-6 w-fit max-w-[calc(100vw-2rem)]">
             <div className="flex flex-col md:flex-row gap-6">
@@ -206,7 +195,7 @@ function HomeView() {
           // Filtering Tech Tags
           .filter((proj) =>
             selectedTags.length === 0 ||
-            proj.tech_tags.some(tag => selectedTags.includes(tag)))
+            (proj.tech_tags ?? []).some(tag => selectedTags.includes(tag)))
           // Filtering Complexity Ratings
           .filter((proj) => {
             // If both are empty, let everything pass

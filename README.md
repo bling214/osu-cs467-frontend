@@ -14,7 +14,7 @@ https://www.geeksforgeeks.org/node-js/update-node-js-and-npm-to-latest-version/
 
 1. Download/Clone Repo
 ```bash
-git clone https://github.com/bling214/osu-cs467-backend.git
+git clone https://github.com/bling214/osu-cs467-frontend.git
 ```
 
 2. Change Directory
@@ -49,4 +49,4 @@ To run the React app, enter the following command:
 npm run dev
 ```
 
-The React App will be running on at \\localhost:5173
+The React App will be running on at http://localhost:5173
