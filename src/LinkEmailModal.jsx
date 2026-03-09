@@ -76,7 +76,7 @@ const LinkEmailModal = ({ isOpen, onClose, onSuccess }) => {
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
       <div className="bg-white p-6 rounded-lg shadow-xl w-full max-w-md">
-        <h3 className="text-2xl font-bold mb-2">Link Your Email</h3>
+        <h3 className="text-2xl font-bold mb-2 text-gray-900">Link Your Email</h3>
         <p className="text-sm text-gray-600 mb-6">
           Link an email to log in from any device, keep your specific pseudonym, and retain the ability to edit or
           delete your past reviews.
@@ -93,7 +93,7 @@ const LinkEmailModal = ({ isOpen, onClose, onSuccess }) => {
               <input
                 type="email"
                 required
-                className="mt-1 block w-full border border-gray-300 rounded-md p-2 text-black focus:ring focus:ring-blue-200 disabled:opacity-50 disabled:bg-gray-100"
+                className="mt-1 block w-full bg-white border border-gray-300 rounded-md p-2 text-black focus:ring focus:ring-blue-200 disabled:opacity-50 disabled:bg-gray-100"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
               />
@@ -109,7 +109,7 @@ const LinkEmailModal = ({ isOpen, onClose, onSuccess }) => {
                   required
                   minLength={6}
                   // Added pr-10 so long passwords don't hide behind the icon
-                  className="block w-full border border-gray-300 rounded-md p-2 pr-10 text-black focus:ring focus:ring-blue-200 disabled:opacity-50 disabled:bg-gray-100"
+                  className="block w-full bg-white border border-gray-300 rounded-md p-2 pr-10 text-black focus:ring focus:ring-blue-200 disabled:opacity-50 disabled:bg-gray-100"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                 />
